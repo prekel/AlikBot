@@ -10,7 +10,7 @@ namespace AlikBot.Core
 	{
 		public Matcher Matcher { get; set; }
 		public WordBase Words { get; set; }
-		private HashSet<char> NotAllowedLetters;
+		private HashSet<char> NotAllowedLetters = new HashSet<char>();
 
 		public Guesser()
 		{
@@ -44,7 +44,7 @@ namespace AlikBot.Core
 				}
 			}
 			var l = d.ToList();
-			l.Sort((KeyValuePair<char, int> a, KeyValuePair<char, int> b) => a.Value.CompareTo(b.Value));
+			l.Sort((KeyValuePair<char, int> a, KeyValuePair<char, int> b) => -a.Value.CompareTo(b.Value));
 			NotAllowedLetters.Add(l[0].Key);
 			return l[0].Key;
 		}
