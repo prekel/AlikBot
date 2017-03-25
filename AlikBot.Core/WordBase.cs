@@ -26,7 +26,18 @@ namespace AlikBot.Core
 			{
 				using (var r = new StreamReader(f.Key))
 				{
-					AddRange((await r.ReadToEndAsync()).Split());
+					AddRange((await r.ReadToEndAsync()).Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries));
+				}
+			}
+		}
+
+		public void Init()
+		{
+			foreach (var f in Files)
+			{
+				using (var r = new StreamReader(f.Key))
+				{
+					AddRange(r.ReadToEnd().Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries));
 				}
 			}
 		}
