@@ -69,37 +69,61 @@ namespace AlikBot.Telegram
 
 			if (QuantityRequest.ContainsKey(id) && QuantityRequest[id] == true)
 			{
-				Guessers[id].Matcher = new Matcher(int.Parse(text));
-				QuantityRequest[id] = false;
-				InterviewRequest[id] = true;
+				try
+				{
+					Guessers[id].Matcher = new Matcher(int.Parse(text));
+					QuantityRequest[id] = false;
+					InterviewRequest[id] = true;
 
-				var g = Guessers[id];
-				var l = g.Guess();
+					var g = Guessers[id];
+					var l = g.Guess();
 
-				await Bot.SendTextMessageAsync(chatid, $"Попытка №1 Шаблон: {g.Matcher.Pattern}\nГде буква '{l}'?");
-				Previous[id] = l;
+					await Bot.SendTextMessageAsync(chatid, $"Попытка №1 Шаблон: {g.Matcher.Pattern}\nГде буква '{l}'?");
+					Previous[id] = l;
+				}
+				catch (Exception e)
+				{
+					System.Console.WriteLine($" - {id} {message.From.FirstName} {message.From.LastName} Спровоцировал: {e.Message}");
+					await Bot.SendTextMessageAsync(chatid, $"Что-то пошло не так: {e.Message}");
+					Guessers[id] = null;
+					QuantityRequest[id] = false;
+					InterviewRequest[id] = false;
+					Previous[id] = '0';
+				}
 			}
 			else if (InterviewRequest.ContainsKey(id) && InterviewRequest[id] == true)
 			{
-				var g = Guessers[id];
-				var p = Previous[id];
-
-				var d = (from i in text.Split() select int.Parse(i)).ToArray();
-				g.Hint(p, d);
-
-				if (g.Matcher.Unknown == 0)
+				try
 				{
-					System.Console.WriteLine($" - {id} {message.From.FirstName} {message.From.LastName} Угадал слово '{g.Matcher.Pattern}' c {g.Attempts} попытки!");
-					await Bot.SendTextMessageAsync(chatid, $"Угадано слово '{g.Matcher.Pattern}' c {g.Attempts} попытки!");
-					InterviewRequest[id] = false;
+					var g = Guessers[id];
+					var p = Previous[id];
+
+					var d = (from i in text.Split() select int.Parse(i)).ToArray();
+					g.Hint(p, d);
+
+					if (g.Matcher.Unknown == 0)
+					{
+						System.Console.WriteLine($" - {id} {message.From.FirstName} {message.From.LastName} Угадал слово '{g.Matcher.Pattern}' c {g.Attempts} попытки!");
+						await Bot.SendTextMessageAsync(chatid, $"Угадано слово '{g.Matcher.Pattern}' c {g.Attempts} попытки!");
+						InterviewRequest[id] = false;
+					}
+					else
+					{
+						var l = g.Guess();
+
+						await Bot.SendTextMessageAsync(chatid, $"Попытка №{g.Attempts} Шаблон: {g.Matcher.Pattern}\nГде буква '{l}'?");
+
+						Previous[id] = l;
+					}
 				}
-				else
+				catch (Exception e)
 				{
-					var l = g.Guess();
-
-					await Bot.SendTextMessageAsync(chatid, $"Попытка №{g.Attempts} Шаблон: {g.Matcher.Pattern}\nГде буква '{l}'?");
-
-					Previous[id] = l;
+					System.Console.WriteLine($" - {id} {message.From.FirstName} {message.From.LastName} Спровоцировал: {e.Message}");
+					await Bot.SendTextMessageAsync(chatid, $"Что-то пошло не так: {e.Message}");
+					Guessers[id] = null;
+					QuantityRequest[id] = false;
+					InterviewRequest[id] = false;
+					Previous[id] = '0';
 				}
 			}
 			else if (message.Text == "где")
