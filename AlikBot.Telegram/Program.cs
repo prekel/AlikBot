@@ -46,7 +46,7 @@ namespace AlikBot.Telegram
 		private static async void BotOnMessageReceived(object sender, MessageEventArgs messageEventArgs)
 		{
 			var message = messageEventArgs.Message;
-			Console.WriteLine($"{message.From.FirstName} {message.From.LastName} {message.Text}");
+			Console.WriteLine($"{message.From.Id} {message.From.FirstName} {message.From.LastName} {message.Text}");
 
 			if (message == null || message.Type != MessageType.TextMessage) return;
 
