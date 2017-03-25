@@ -51,7 +51,6 @@ namespace AlikBot.Core
 
 		public void Hint(char letter, params int[] indexes)
 		{
-
 			if (indexes[0] == 0) return;
 			var p = new StringBuilder(Matcher.Pattern);
 			foreach (var i in indexes)
