@@ -6,9 +6,25 @@ using System.Threading.Tasks;
 
 namespace AlikBot.Core
 {
-    public class Matcher
-    {
+	public class Matcher
+	{
 		public string Pattern { get; set; }
+
+		public int Known
+		{
+			get
+			{
+				var c = 0;
+				foreach (var i in Pattern)
+				{
+					if (i != '_') 
+						c++;
+				}
+				return c;
+			}
+		}
+
+		public int Unknown => Pattern.Length - Known;
 
 		public Matcher(string pattern) => Pattern = pattern;
 
@@ -27,5 +43,8 @@ namespace AlikBot.Core
 			}
 			return true;
 		}
+
+		public override string ToString() => 
+			$"Pattern: {Pattern} Length: {Pattern.Length} Known: {Known} Unknown: {Unknown}";
 	}
 }
