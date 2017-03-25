@@ -130,6 +130,10 @@ namespace AlikBot.Telegram
 			{
 				await Bot.SendLocationAsync(chatid, 56.055237f, 92.968446f);
 			}
+			else if (message.Text == "/rules")
+			{
+				await Bot.SendTextMessageAsync(chatid, "Наберите /startgame для начала. Ответ боту — 0, если буквы нет, и номера букв через пробел, если есть");
+			}
 			else if (message.Text == "/startgame")
 			{
 				Guessers[id] = new Guesser(Words);
