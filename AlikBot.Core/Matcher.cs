@@ -45,6 +45,6 @@ namespace AlikBot.Core
 		}
 
 		public override string ToString() => 
-			$"Pattern:{Pattern} Length:{Pattern.Length} Known:{Known} Unknown:{Unknown}";
+			$"Pattern: {Pattern} Length: {Pattern.Length} Known: {Known} Unknown: {Unknown}";
 	}
 }

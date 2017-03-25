@@ -9,8 +9,12 @@ namespace AlikBot.Core
 	public class Guesser
 	{
 		public Matcher Matcher { get; set; }
+
 		public WordBase Words { get; set; }
+
 		private HashSet<char> NotAllowedLetters = new HashSet<char>();
+
+		public int Attempts => NotAllowedLetters.Count;
 
 		public Guesser()
 		{
@@ -59,5 +63,7 @@ namespace AlikBot.Core
 			}
 			Matcher.Pattern = p.ToString();
 		}
+
+		public override string ToString() => $"{Matcher.ToString()} Attempts: {Attempts}";
 	}
 }
