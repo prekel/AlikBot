@@ -12,6 +12,8 @@ namespace AlikBot.Core
 
 		public Matcher(string pattern) => Pattern = pattern;
 
+		public Matcher(int n) => Pattern = new String('_', n);
+
 		public Matcher() => Pattern = "___";
 
 		public bool Match(string s)
