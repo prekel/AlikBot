@@ -18,7 +18,13 @@ namespace AlikBot.Console
 			System.Console.WriteLine("Количество: ");
 			var n = int.Parse(System.Console.ReadLine());
 			var g = new Guesser(n, wb);
-			g.Guess
+			while (true)
+			{
+				var l = g.Guess();
+				System.Console.WriteLine($"Где буква {l}?");
+				var d = (from i in System.Console.ReadLine().Split() select int.Parse(i)).ToArray();
+				g.Hint(l, d);
+			}
 		}
 	}
 }

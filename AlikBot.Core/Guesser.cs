@@ -10,6 +10,7 @@ namespace AlikBot.Core
 	{
 		public Matcher Matcher { get; set; }
 		public WordBase Words { get; set; }
+		private HashSet<char> NotAllowedLetters;
 
 		public Guesser()
 		{
@@ -19,7 +20,7 @@ namespace AlikBot.Core
 
 		public Guesser(int n, WordBase b)
 		{
-			Matcher = new Matcher(n); 
+			Matcher = new Matcher(n);
 			Words = b;
 		}
 
@@ -31,11 +32,26 @@ namespace AlikBot.Core
 
 		public char Guess()
 		{
-			throw new NotImplementedException();
+			var d = new Dictionary<char, int>();
+			foreach (var i in Words)
+			{
+				if (!Matcher.Match(i)) continue;
+				foreach (var j in i)
+				{
+					if (NotAllowedLetters.Contains(j)) continue;
+					if (d.ContainsKey(j)) d[j]++;
+					else d[j] = 1;
+				}
+			}
+			var l = d.ToList();
+			l.Sort((KeyValuePair<char, int> a, KeyValuePair<char, int> b) => a.Value.CompareTo(b.Value));
+			NotAllowedLetters.Add(l[0].Key);
+			return l[0].Key;
 		}
 
 		public void Hint(char letter, params int[] indexes)
 		{
+
 			if (indexes[0] == 0) return;
 			var p = new StringBuilder(Matcher.Pattern);
 			foreach (var i in indexes)
