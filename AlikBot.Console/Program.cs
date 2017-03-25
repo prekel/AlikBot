@@ -17,6 +17,8 @@ namespace AlikBot.Console
 			wb.Init();
 			System.Console.WriteLine("Количество: ");
 			var n = int.Parse(System.Console.ReadLine());
+			var g = new Guesser(n, wb);
+			g.Guess
 		}
 	}
 }

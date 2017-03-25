@@ -28,5 +28,21 @@ namespace AlikBot.Core
 			Matcher = m;
 			Words = b;
 		}
+
+		public char Guess()
+		{
+			throw new NotImplementedException();
+		}
+
+		public void Hint(char letter, params int[] indexes)
+		{
+			if (indexes[0] == 0) return;
+			var p = new StringBuilder(Matcher.Pattern);
+			foreach (var i in indexes)
+			{
+				p[i - 1] = letter;
+			}
+			Matcher.Pattern = p.ToString();
+		}
 	}
 }
