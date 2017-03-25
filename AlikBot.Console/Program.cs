@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
+
+using AlikBot.Core;
 
 namespace AlikBot.Console
 {
@@ -10,7 +13,8 @@ namespace AlikBot.Console
 	{
 		public static void Main(string[] args)
 		{
-			
+			var wb = new WordBase(@"C:\Users\vladislav\OneDrive\Projects\AlikBot\AlikBot.Core\pldf.txt");
+			wb.Init();
 		}
 	}
 }
