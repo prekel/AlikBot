@@ -15,6 +15,8 @@ namespace AlikBot.Console
 		{
 			var wb = new WordBase(@"C:\Users\vladislav\OneDrive\Projects\AlikBot\AlikBot.Core\pldf.txt");
 			wb.Init();
+			System.Console.WriteLine("Количество: ");
+			var n = int.Parse(System.Console.ReadLine());
 		}
 	}
 }
