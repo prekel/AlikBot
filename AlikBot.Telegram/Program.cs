@@ -24,7 +24,7 @@ namespace AlikBot.Telegram
 			{
 				Bot = new TelegramBotClient(r.ReadLine());
 			}
-			
+
 			Bot.OnMessage += BotOnMessageReceived;
 			Bot.OnMessageEdited += BotOnMessageReceived;
 			Bot.OnReceiveError += BotOnReceiveError;
@@ -50,7 +50,14 @@ namespace AlikBot.Telegram
 
 			if (message == null || message.Type != MessageType.TextMessage) return;
 
-			await Bot.SendTextMessageAsync(message.Chat.Id, message.Text, replyMarkup: new ReplyKeyboardHide());
+			if (message.Text == "где")
+			{
+				await Bot.SendLocationAsync(message.Chat.Id, 56.055237f, 92.968446f, replyMarkup: new ReplyKeyboardHide());
+			}
+			else
+			{
+				await Bot.SendTextMessageAsync(message.Chat.Id, message.Text, replyMarkup: new ReplyKeyboardHide());
+			}
 		}
 	}
 }
