@@ -252,4 +252,4 @@ paket-files/
 *.sln.iml
 
 # Api token
-api.txt
+AlikBot.Telegram/api.txt
