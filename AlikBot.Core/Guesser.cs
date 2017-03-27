@@ -50,7 +50,7 @@ namespace AlikBot.Core
 				}
 			}
 			var l = d.ToList();
-			l.Sort((KeyValuePair<char, int> a, KeyValuePair<char, int> b) => -a.Value.CompareTo(b.Value));
+			l.Sort((a, b) => -a.Value.CompareTo(b.Value));
 			NotAllowedLetters.Add(l[0].Key);
 			return l[0].Key;
 		}
@@ -66,6 +66,6 @@ namespace AlikBot.Core
 			Matcher.Pattern = p.ToString();
 		}
 
-		public override string ToString() => $"{Matcher.ToString()} Attempts: {Attempts}";
+		public override string ToString() => $"{Matcher} Attempts: {Attempts}";
 	}
 }

@@ -17,7 +17,7 @@ using AlikBot.Core;
 
 namespace AlikBot.Telegram
 {
-	class Program
+	public class Program
 	{
 		private static TelegramBotClient Bot;
 
@@ -28,7 +28,7 @@ namespace AlikBot.Telegram
 		private static Dictionary<int, bool> InterviewRequest = new Dictionary<int, bool>();
 		private static Dictionary<int, char> Previous = new Dictionary<int, char>();
 
-		static void Main(string[] args)
+		private static void Main(string[] args)
 		{
 			using (var r = new StreamReader("api.txt"))
 			{
@@ -65,9 +65,9 @@ namespace AlikBot.Telegram
 
 			Console.WriteLine($"{id} {message.From.FirstName} {message.From.LastName} {text}");
 
-			if (message == null || message.Type != MessageType.TextMessage) return;
+			if (message.Type != MessageType.TextMessage) return;
 
-			if (QuantityRequest.ContainsKey(id) && QuantityRequest[id] == true)
+			if (QuantityRequest.ContainsKey(id) && QuantityRequest[id])
 			{
 				try
 				{
@@ -83,7 +83,7 @@ namespace AlikBot.Telegram
 				}
 				catch (Exception e)
 				{
-					System.Console.WriteLine($" - {id} {message.From.FirstName} {message.From.LastName} Спровоцировал: {e.Message}");
+					Console.WriteLine($" - {id} {message.From.FirstName} {message.From.LastName} Спровоцировал: {e.Message}");
 					await Bot.SendTextMessageAsync(chatid, $"Что-то пошло не так: {e.Message}");
 					Guessers[id] = null;
 					QuantityRequest[id] = false;
@@ -91,7 +91,7 @@ namespace AlikBot.Telegram
 					Previous[id] = '0';
 				}
 			}
-			else if (InterviewRequest.ContainsKey(id) && InterviewRequest[id] == true)
+			else if (InterviewRequest.ContainsKey(id) && InterviewRequest[id])
 			{
 				try
 				{
@@ -103,7 +103,7 @@ namespace AlikBot.Telegram
 
 					if (g.Matcher.Unknown == 0)
 					{
-						System.Console.WriteLine($" - {id} {message.From.FirstName} {message.From.LastName} Угадал слово '{g.Matcher.Pattern}' c {g.Attempts} попытки!");
+						Console.WriteLine($" - {id} {message.From.FirstName} {message.From.LastName} Угадал слово '{g.Matcher.Pattern}' c {g.Attempts} попытки!");
 						await Bot.SendTextMessageAsync(chatid, $"Угадано слово '{g.Matcher.Pattern}' c {g.Attempts} попытки!");
 						InterviewRequest[id] = false;
 					}
@@ -118,7 +118,7 @@ namespace AlikBot.Telegram
 				}
 				catch (Exception e)
 				{
-					System.Console.WriteLine($" - {id} {message.From.FirstName} {message.From.LastName} Спровоцировал: {e.Message}");
+					Console.WriteLine($" - {id} {message.From.FirstName} {message.From.LastName} Спровоцировал: {e.Message}");
 					await Bot.SendTextMessageAsync(chatid, $"Что-то пошло не так: {e.Message}");
 					Guessers[id] = null;
 					QuantityRequest[id] = false;

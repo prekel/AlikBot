@@ -10,19 +10,7 @@ namespace AlikBot.Core
 	{
 		public string Pattern { get; set; }
 
-		public int Known
-		{
-			get
-			{
-				var c = 0;
-				foreach (var i in Pattern)
-				{
-					if (i != '_') 
-						c++;
-				}
-				return c;
-			}
-		}
+		public int Known => Pattern.Count(i => i != '_');
 
 		public int Unknown => Pattern.Length - Known;
 
@@ -36,12 +24,7 @@ namespace AlikBot.Core
 		{
 			if (s.Length != Pattern.Length)
 				return false;
-			for (var i = 0; i < s.Length; i++)
-			{
-				if (s[i] != Pattern[i] && Pattern[i] != '_')
-					return false;
-			}
-			return true;
+			return !s.Where((t, i) => t != Pattern[i] && Pattern[i] != '_').Any();
 		}
 
 		public override string ToString() => 
