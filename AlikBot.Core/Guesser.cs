@@ -44,7 +44,7 @@ namespace AlikBot.Core
 				if (!Matcher.Match(i)) continue;
 				foreach (var j in i)
 				{
-					//if (NotAllowedLetters.Contains(j)) continue;
+					if (Matcher.NotAllowedLetters.Contains(j)) continue;
 					if (d.ContainsKey(j)) d[j]++;
 					else d[j] = 1;
 				}

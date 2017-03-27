@@ -20,18 +20,18 @@ namespace AlikBot.Core
 
 		public Matcher() => Pattern = "___";
 
-		public HashSet<char> NotAllowedLetters { get; set; } = new HashSet<char>();
+		public HashSet<char> NotAllowedLetters = new HashSet<char>();
 
 		public bool Match(string s)
 		{
-			if ((from i in s select NotAllowedLetters.Contains(i)).Any())
-				return false;
 			if (s.Length != Pattern.Length)
+				return false;
+			if (s.ToCharArray().Count(i => NotAllowedLetters.Contains(i)) == 0 && NotAllowedLetters.Count > 0)
 				return false;
 			return !s.Where((t, i) => t != Pattern[i] && Pattern[i] != '_').Any();
 		}
 
-		public override string ToString() => 
+		public override string ToString() =>
 			$"Pattern: {Pattern} Length: {Pattern.Length} Known: {Known} Unknown: {Unknown}";
 	}
 }
