@@ -47,6 +47,7 @@ namespace AlikBot.Telegram
 			Console.Title = me.Username;
 
 			Bot.StartReceiving();
+			Bot.SendTextMessageAsync(115533229, $"Я проснулся {DateTime.Now}");
 			Console.ReadLine();
 			Bot.StopReceiving();
 		}
