@@ -12,9 +12,9 @@ namespace AlikBot.Core
 
 		public WordBase Words { get; set; }
 
-		private HashSet<char> NotAllowedLetters = new HashSet<char>();
+		//private HashSet<char> NotAllowedLetters = new HashSet<char>();
 
-		public int Attempts => NotAllowedLetters.Count;
+		public int Attempts => Matcher.NotAllowedLetters.Count;
 
 		public Guesser()
 		{
@@ -44,14 +44,14 @@ namespace AlikBot.Core
 				if (!Matcher.Match(i)) continue;
 				foreach (var j in i)
 				{
-					if (NotAllowedLetters.Contains(j)) continue;
+					//if (NotAllowedLetters.Contains(j)) continue;
 					if (d.ContainsKey(j)) d[j]++;
 					else d[j] = 1;
 				}
 			}
 			var l = d.ToList();
 			l.Sort((a, b) => -a.Value.CompareTo(b.Value));
-			NotAllowedLetters.Add(l[0].Key);
+			Matcher.NotAllowedLetters.Add(l[0].Key);
 			return l[0].Key;
 		}
 

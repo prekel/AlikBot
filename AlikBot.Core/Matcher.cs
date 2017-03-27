@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace AlikBot.Core
@@ -21,7 +20,7 @@ namespace AlikBot.Core
 
 		public Matcher() => Pattern = "___";
 
-		public HashSet<char> NotAllowedLetters { get; set; }
+		public HashSet<char> NotAllowedLetters { get; set; } = new HashSet<char>();
 
 		public bool Match(string s)
 		{
