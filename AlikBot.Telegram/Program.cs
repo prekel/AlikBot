@@ -76,15 +76,16 @@ namespace AlikBot.Telegram
 					InterviewRequest[id] = true;
 
 					var g = Guessers[id];
-					var l = g.Guess();
+					var guess = g.GuessAnswer();
+					var l = guess.Letter;
 
 					await Bot.SendTextMessageAsync(chatid, $"Попытка №1 Шаблон: {g.Matcher.Pattern}\nГде буква '{l}'?");
 					Previous[id] = l;
 				}
 				catch (Exception e)
 				{
-					Console.WriteLine($" - {id} {message.From.FirstName} {message.From.LastName} Спровоцировал: {e.Message}");
-					await Bot.SendTextMessageAsync(chatid, $"Что-то пошло не так: {e.Message}");
+					Console.WriteLine($" - {id} {message.From.FirstName} {message.From.LastName} Спровоцировал: {e.GetType()} {e.Message}");
+					await Bot.SendTextMessageAsync(chatid, $"Что-то пошло не так: {e.GetType()} {e.Message}");
 					Guessers[id] = null;
 					QuantityRequest[id] = false;
 					InterviewRequest[id] = false;
@@ -109,7 +110,8 @@ namespace AlikBot.Telegram
 					}
 					else
 					{
-						var l = g.Guess();
+						var guess = g.GuessAnswer();
+						var l = guess.Letter;
 
 						await Bot.SendTextMessageAsync(chatid, $"Попытка №{g.Attempts} Шаблон: {g.Matcher.Pattern}\nГде буква '{l}'?");
 
@@ -118,8 +120,8 @@ namespace AlikBot.Telegram
 				}
 				catch (Exception e)
 				{
-					Console.WriteLine($" - {id} {message.From.FirstName} {message.From.LastName} Спровоцировал: {e.Message}");
-					await Bot.SendTextMessageAsync(chatid, $"Что-то пошло не так: {e.Message}");
+					Console.WriteLine($" - {id} {message.From.FirstName} {message.From.LastName} Спровоцировал: {e.GetType()} {e.Message}");
+					await Bot.SendTextMessageAsync(chatid, $"Что-то пошло не так: {e.GetType()} {e.Message}");
 					Guessers[id] = null;
 					QuantityRequest[id] = false;
 					InterviewRequest[id] = false;
