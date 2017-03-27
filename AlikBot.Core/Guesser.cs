@@ -12,9 +12,7 @@ namespace AlikBot.Core
 
 		public WordBase Words { get; set; }
 
-		//private HashSet<char> NotAllowedLetters = new HashSet<char>();
-
-		public int Attempts => Matcher.GuessedLetters.Count;
+		public int Attempts => Matcher.Guessed.Count + Matcher.WrongGuessed.Count;
 
 		public Guesser()
 		{
@@ -36,28 +34,55 @@ namespace AlikBot.Core
 			Words = b;
 		}
 
-		public char Guess()
+		public class GuesserAnswer
+		{
+			public char Letter { get; set; }
+
+			public List<string> PossibleWords { get; set; } = new List<string>();
+
+			public GuesserAnswer()
+			{
+			}
+
+			public override string ToString() => $"Letter: '{Letter}' WordsCount: {PossibleWords.Count}";
+		}
+
+		public GuesserAnswer Answer { get; set; } = new GuesserAnswer();
+
+		public GuesserAnswer GuessAnswer()
+		{
+			Guess();
+			return Answer;
+		}
+
+		public void Guess()
 		{
 			var d = new Dictionary<char, int>();
+			Answer = new GuesserAnswer();
 			foreach (var i in Words)
 			{
 				if (!Matcher.Match(i)) continue;
+				Answer.PossibleWords.Add(i);
 				foreach (var j in i)
 				{
-					if (Matcher.GuessedLetters.Contains(j)) continue;
+					if (Matcher.Guessed.Contains(j)) continue;
 					if (d.ContainsKey(j)) d[j]++;
 					else d[j] = 1;
 				}
 			}
 			var l = d.ToList();
 			l.Sort((a, b) => -a.Value.CompareTo(b.Value));
-			Matcher.GuessedLetters.Add(l[0].Key);
-			return l[0].Key;
+			Answer.Letter = l[0].Key;
 		}
 
 		public void Hint(char letter, params int[] indexes)
 		{
-			if (indexes[0] == 0) return;
+			if (indexes[0] == 0)
+			{
+				Matcher.WrongGuessed.Add(letter);
+				return;
+			}
+			Matcher.Guessed.Add(letter);
 			var p = new StringBuilder(Matcher.Pattern);
 			foreach (var i in indexes)
 			{
@@ -66,6 +91,6 @@ namespace AlikBot.Core
 			Matcher.Pattern = p.ToString();
 		}
 
-		public override string ToString() => $"{Matcher} Attempts: {Attempts}";
+		public override string ToString() => $"Matcher: [{Matcher}] Answer: [{Answer}] Attempts: {Attempts}";
 	}
 }
