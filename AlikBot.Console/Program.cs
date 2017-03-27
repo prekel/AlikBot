@@ -18,10 +18,11 @@ namespace AlikBot.Console
 			System.Console.Write("Количество букв: ");
 			var n = int.Parse(System.Console.ReadLine());
 			var g = new Guesser(n, wb);
-			var c = 1;
 			while (true)
 			{
-				var l = g.Guess();
+				var guess = g.GuessAnswer();
+				var l = guess.Letter;
+				var c = g.Attempts;
 				System.Console.WriteLine($"Попытка №{c} Шаблон: {g.Matcher.Pattern}");
 				System.Console.WriteLine($"Где буква '{l}'?");
 				var d = (from i in System.Console.ReadLine().Split() select int.Parse(i)).ToArray();
@@ -31,7 +32,6 @@ namespace AlikBot.Console
 					System.Console.WriteLine($"Угадано слово '{g.Matcher.Pattern}' c {c} попытки!");
 					break;
 				}
-				c++;
 			}
 		}
 	}

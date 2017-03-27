@@ -20,20 +20,33 @@ namespace AlikBot.Core
 
 		public Matcher() => Pattern = "___";
 
-		public HashSet<char> GuessedLetters { get; set; } = new HashSet<char>();
+		public class Letters : HashSet<char>
+		{
+			public override string ToString()
+			{
+				var s = "";
+				foreach (var i in this)
+					s += i;
+				return s;
+			}
 
-		public string GuessedLettersList => (from i in GuessedLetters select i.ToString()).ToString();
+			public string ToString(string name) => $"[{Count} {name}: '{ToString()}']";
+		}
+
+		public Letters Guessed { get; set; } = new Letters();
+
+		public Letters WrongGuessed { get; set; } = new Letters();
 
 		public bool Match(string s)
 		{
 			if (s.Length != Pattern.Length)
 				return false;
-			if (s.ToCharArray().Count(i => GuessedLetters.Contains(i)) == 0 && GuessedLetters.Count > 0)
+			if (s.ToCharArray().Count(i => Guessed.Contains(i)) == 0 && Guessed.Count > 0)
 				return false;
 			return !s.Where((t, i) => t != Pattern[i] && Pattern[i] != '_').Any();
 		}
 
 		public override string ToString() =>
-			$"Pattern: {Pattern} Guessed: {GuessedLettersList} Length: {Pattern.Length} Known: {Known} Unknown: {Unknown}";
+			$"Pattern: {Pattern} {Guessed.ToString("Guessed")} {WrongGuessed.ToString("WrongGuessed")} Length: {Pattern.Length} Known: {Known} Unknown: {Unknown}";
 	}
 }
