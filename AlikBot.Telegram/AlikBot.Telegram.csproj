@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
+    <Compile Include="UserInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="api.txt" />
