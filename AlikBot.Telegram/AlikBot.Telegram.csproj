@@ -59,6 +59,12 @@
   <ItemGroup>
     <Content Include="api.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AlikBot.Core\AlikBot.Core.csproj">
+      <Project>{992b5a23-30c6-42d4-9639-7ef48c42672b}</Project>
+      <Name>AlikBot.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>

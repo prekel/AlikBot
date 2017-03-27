@@ -22,6 +22,8 @@ namespace AlikBot.Core
 
 		public Guesser(int n) => Matcher = new Matcher(n);
 
+		public Guesser(WordBase b) => Words = b;
+
 		public Guesser(int n, WordBase b)
 		{
 			Matcher = new Matcher(n);

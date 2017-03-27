@@ -23,7 +23,7 @@ namespace AlikBot.Console
 			{
 				var l = g.Guess();
 				System.Console.WriteLine($"Попытка №{c} Шаблон: {g.Matcher.Pattern}");
-				System.Console.WriteLine($"Где буква {l}?");
+				System.Console.WriteLine($"Где буква '{l}'?");
 				var d = (from i in System.Console.ReadLine().Split() select int.Parse(i)).ToArray();
 				g.Hint(l, d);
 				if (g.Matcher.Unknown == 0)
