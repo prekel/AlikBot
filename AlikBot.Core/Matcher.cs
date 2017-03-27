@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AlikBot.Core
@@ -20,8 +21,12 @@ namespace AlikBot.Core
 
 		public Matcher() => Pattern = "___";
 
+		public HashSet<char> NotAllowedLetters { get; set; }
+
 		public bool Match(string s)
 		{
+			if ((from i in s select NotAllowedLetters.Contains(i)).Any())
+				return false;
 			if (s.Length != Pattern.Length)
 				return false;
 			return !s.Where((t, i) => t != Pattern[i] && Pattern[i] != '_').Any();
