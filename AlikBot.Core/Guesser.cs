@@ -51,6 +51,12 @@ namespace AlikBot.Core
 
 		public GuesserAnswer GuessAnswer()
 		{
+			Guess();
+			return Answer;
+		}
+
+		public void Guess()
+		{
 			var d = new Dictionary<char, int>();
 			Answer = new GuesserAnswer();
 			foreach (var i in Words)
@@ -67,27 +73,6 @@ namespace AlikBot.Core
 			var l = d.ToList();
 			l.Sort((a, b) => -a.Value.CompareTo(b.Value));
 			Answer.Letter = l[0].Key;
-			return Answer;
-		}
-
-		// todel
-		public char Guess()
-		{
-			var d = new Dictionary<char, int>();
-			foreach (var i in Words)
-			{
-				if (!Matcher.Match(i)) continue;
-				foreach (var j in i)
-				{
-					if (Matcher.Guessed.Contains(j)) continue;
-					if (d.ContainsKey(j)) d[j]++;
-					else d[j] = 1;
-				}
-			}
-			var l = d.ToList();
-			l.Sort((a, b) => -a.Value.CompareTo(b.Value));
-			Matcher.Guessed.Add(l[0].Key);
-			return l[0].Key;
 		}
 
 		public void Hint(char letter, params int[] indexes)

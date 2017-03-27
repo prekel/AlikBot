@@ -15,7 +15,7 @@ namespace AlikBot.Console
 		{
 			var wb = new WordBase(@"C:\Users\vladislav\OneDrive\Projects\AlikBot\AlikBot.Core\pldf.txt");
 			wb.Init();
-			System.Console.Write("Количество букв: ");
+			System.Console.Write("Сколько букв? ");
 			var n = int.Parse(System.Console.ReadLine());
 			var g = new Guesser(n, wb);
 			while (true)
