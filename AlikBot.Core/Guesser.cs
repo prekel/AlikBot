@@ -37,10 +37,14 @@ namespace AlikBot.Core
 		public class GuesserAnswer
 		{
 			public char Letter { get; set; }
+
 			public List<string> PossibleWords { get; set; } = new List<string>();
+
 			public GuesserAnswer()
 			{
 			}
+
+			public override string ToString() => $"Letter: {Letter} WordsCount: {PossibleWords.Count}";
 		}
 
 		public GuesserAnswer GuessAnswer()
