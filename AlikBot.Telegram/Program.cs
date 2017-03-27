@@ -131,15 +131,19 @@ namespace AlikBot.Telegram
 					UserBase[id].Previous = '0';
 				}
 			}
-			else if (message.Text == "где")
+			else if (text.ToLower() == "где")
 			{
 				await Bot.SendLocationAsync(chatid, 56.055237f, 92.968446f);
 			}
-			else if (message.Text == "/rules")
+			else if (text.ToLower() == "убейся")
+			{
+				Environment.Exit(id);
+			}
+			else if (text.ToLower() == "/rules")
 			{
 				await Bot.SendTextMessageAsync(chatid, "Наберите /startgame для начала. Ответ боту — 0, если буквы нет, и номера букв через пробел, если есть");
 			}
-			else if (message.Text == "/startgame")
+			else if (text.ToLower() == "/startgame")
 			{
 				//UserBase[id].Guesser = new Guesser(Words);
 				UserBase[id].QuantityRequest = true;
