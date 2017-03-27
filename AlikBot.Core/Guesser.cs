@@ -14,7 +14,7 @@ namespace AlikBot.Core
 
 		//private HashSet<char> NotAllowedLetters = new HashSet<char>();
 
-		public int Attempts => Matcher.NotAllowedLetters.Count;
+		public int Attempts => Matcher.GuessedLetters.Count;
 
 		public Guesser()
 		{
@@ -44,14 +44,14 @@ namespace AlikBot.Core
 				if (!Matcher.Match(i)) continue;
 				foreach (var j in i)
 				{
-					if (Matcher.NotAllowedLetters.Contains(j)) continue;
+					if (Matcher.GuessedLetters.Contains(j)) continue;
 					if (d.ContainsKey(j)) d[j]++;
 					else d[j] = 1;
 				}
 			}
 			var l = d.ToList();
 			l.Sort((a, b) => -a.Value.CompareTo(b.Value));
-			Matcher.NotAllowedLetters.Add(l[0].Key);
+			Matcher.GuessedLetters.Add(l[0].Key);
 			return l[0].Key;
 		}
 

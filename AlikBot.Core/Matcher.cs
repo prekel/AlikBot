@@ -20,13 +20,15 @@ namespace AlikBot.Core
 
 		public Matcher() => Pattern = "___";
 
-		public HashSet<char> NotAllowedLetters = new HashSet<char>();
+		public HashSet<char> GuessedLetters = new HashSet<char>();
+
+		public string GuessedLettersList => (from i in GuessedLetters select i.ToString()).ToString();
 
 		public bool Match(string s)
 		{
 			if (s.Length != Pattern.Length)
 				return false;
-			if (s.ToCharArray().Count(i => NotAllowedLetters.Contains(i)) == 0 && NotAllowedLetters.Count > 0)
+			if (s.ToCharArray().Count(i => GuessedLetters.Contains(i)) == 0 && GuessedLetters.Count > 0)
 				return false;
 			return !s.Where((t, i) => t != Pattern[i] && Pattern[i] != '_').Any();
 		}
