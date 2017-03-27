@@ -36,6 +36,37 @@ namespace AlikBot.Core
 			Words = b;
 		}
 
+		public class GuesserAnswer
+		{
+			public char Letter { get; set; }
+			public List<string> PossibleWords { get; set; } = new List<string>();
+			public GuesserAnswer()
+			{
+			}
+		}
+
+		public GuesserAnswer GuessAnswer()
+		{
+			var d = new Dictionary<char, int>();
+			var ans = new GuesserAnswer();
+			foreach (var i in Words)
+			{
+				if (!Matcher.Match(i)) continue;
+				ans.PossibleWords.Add(i);
+				foreach (var j in i)
+				{
+					if (Matcher.GuessedLetters.Contains(j)) continue;
+					if (d.ContainsKey(j)) d[j]++;
+					else d[j] = 1;
+				}
+			}
+			var l = d.ToList();
+			l.Sort((a, b) => -a.Value.CompareTo(b.Value));
+			Matcher.GuessedLetters.Add(l[0].Key);
+			ans.Letter = l[0].Key;
+			return ans;
+		}
+
 		public char Guess()
 		{
 			var d = new Dictionary<char, int>();
