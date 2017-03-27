@@ -44,17 +44,19 @@ namespace AlikBot.Core
 			{
 			}
 
-			public override string ToString() => $"Letter: {Letter} WordsCount: {PossibleWords.Count}";
+			public override string ToString() => $"Letter: '{Letter}' WordsCount: {PossibleWords.Count}";
 		}
+
+		public GuesserAnswer Answer { get; set; } = new GuesserAnswer();
 
 		public GuesserAnswer GuessAnswer()
 		{
 			var d = new Dictionary<char, int>();
-			var ans = new GuesserAnswer();
+			Answer = new GuesserAnswer();
 			foreach (var i in Words)
 			{
 				if (!Matcher.Match(i)) continue;
-				ans.PossibleWords.Add(i);
+				Answer.PossibleWords.Add(i);
 				foreach (var j in i)
 				{
 					if (Matcher.Guessed.Contains(j)) continue;
@@ -64,8 +66,8 @@ namespace AlikBot.Core
 			}
 			var l = d.ToList();
 			l.Sort((a, b) => -a.Value.CompareTo(b.Value));
-			ans.Letter = l[0].Key;
-			return ans;
+			Answer.Letter = l[0].Key;
+			return Answer;
 		}
 
 		// todel
@@ -104,6 +106,6 @@ namespace AlikBot.Core
 			Matcher.Pattern = p.ToString();
 		}
 
-		public override string ToString() => $"{Matcher} Attempts: {Attempts}";
+		public override string ToString() => $"Matcher: [{Matcher}] Answer: [{Answer}] Attempts: {Attempts}";
 	}
 }
