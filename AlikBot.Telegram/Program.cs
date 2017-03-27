@@ -28,6 +28,8 @@ namespace AlikBot.Telegram
 		private static Dictionary<int, bool> InterviewRequest = new Dictionary<int, bool>();
 		private static Dictionary<int, char> Previous = new Dictionary<int, char>();
 
+		public static UserBase UserBase { get; set; } = new UserBase();
+
 		private static void Main(string[] args)
 		{
 			using (var r = new StreamReader("api.txt"))
@@ -67,6 +69,11 @@ namespace AlikBot.Telegram
 			Console.WriteLine($"{id} {message.From.FirstName} {message.From.LastName} {text}");
 
 			if (message.Type != MessageType.TextMessage) return;
+
+			if (!UserBase.ContainsKey(id))
+			{
+				UserBase[id] = new UserInfo();
+			}
 
 			if (QuantityRequest.ContainsKey(id) && QuantityRequest[id])
 			{
