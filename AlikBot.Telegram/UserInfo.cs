@@ -20,9 +20,11 @@ namespace AlikBot.Telegram
 	public class UserInfo
 	{
 		public int ID { get; set; }
-		public Guesser Guessers { get; set; }
+		public Guesser Guesser { get; set; }
 		public bool QuantityRequest { get; set; }
 		public bool InterviewRequest { get; set; }
 		public char Previous { get; set; }
+
+		public UserInfo(int id) => ID = id;
 	}
 }

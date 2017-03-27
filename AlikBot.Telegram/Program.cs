@@ -23,11 +23,6 @@ namespace AlikBot.Telegram
 
 		private static WordBase Words;
 
-		private static Dictionary<int, Guesser> Guessers = new Dictionary<int, Guesser>();
-		private static Dictionary<int, bool> QuantityRequest = new Dictionary<int, bool>();
-		private static Dictionary<int, bool> InterviewRequest = new Dictionary<int, bool>();
-		private static Dictionary<int, char> Previous = new Dictionary<int, char>();
-
 		public static UserBase UserBase { get; set; } = new UserBase();
 
 		private static void Main(string[] args)
@@ -72,40 +67,40 @@ namespace AlikBot.Telegram
 
 			if (!UserBase.ContainsKey(id))
 			{
-				UserBase[id] = new UserInfo();
+				UserBase[id] = new UserInfo(id);
 			}
 
-			if (QuantityRequest.ContainsKey(id) && QuantityRequest[id])
+			if (UserBase[id].QuantityRequest)
 			{
 				try
 				{
-					Guessers[id].Matcher = new Matcher(int.Parse(text));
-					QuantityRequest[id] = false;
-					InterviewRequest[id] = true;
+					UserBase[id].Guesser = new Guesser(int.Parse(text), Words);
+					UserBase[id].QuantityRequest = false;
+					UserBase[id].InterviewRequest = true;
 
-					var g = Guessers[id];
+					var g = UserBase[id].Guesser;
 					var guess = g.GuessAnswer();
 					var l = guess.Letter;
 
 					await Bot.SendTextMessageAsync(chatid, $"Попытка №1 Шаблон: {g.Matcher.Pattern}\nГде буква '{l}'?");
-					Previous[id] = l;
+					UserBase[id].Previous = l;
 				}
 				catch (Exception e)
 				{
 					Console.WriteLine($" - {id} {message.From.FirstName} {message.From.LastName} Спровоцировал: {e.GetType()} {e.Message}");
 					await Bot.SendTextMessageAsync(chatid, $"Что-то пошло не так: {e.GetType()} {e.Message}");
-					Guessers[id] = null;
-					QuantityRequest[id] = false;
-					InterviewRequest[id] = false;
-					Previous[id] = '0';
+					UserBase[id].Guesser = null;
+					UserBase[id].QuantityRequest = false;
+					UserBase[id].InterviewRequest = false;
+					UserBase[id].Previous = '0';
 				}
 			}
-			else if (InterviewRequest.ContainsKey(id) && InterviewRequest[id])
+			else if (UserBase[id].InterviewRequest)
 			{
 				try
 				{
-					var g = Guessers[id];
-					var p = Previous[id];
+					var g = UserBase[id].Guesser;
+					var p = UserBase[id].Previous;
 
 					var d = (from i in text.Split() select int.Parse(i)).ToArray();
 					g.Hint(p, d);
@@ -114,7 +109,7 @@ namespace AlikBot.Telegram
 					{
 						Console.WriteLine($" - {id} {message.From.FirstName} {message.From.LastName} Угадал слово '{g.Matcher.Pattern}' c {g.Attempts} попытки!");
 						await Bot.SendTextMessageAsync(chatid, $"Угадано слово '{g.Matcher.Pattern}' c {g.Attempts} попытки!");
-						InterviewRequest[id] = false;
+						UserBase[id].InterviewRequest = false;
 					}
 					else
 					{
@@ -123,17 +118,17 @@ namespace AlikBot.Telegram
 
 						await Bot.SendTextMessageAsync(chatid, $"Попытка №{g.Attempts} Шаблон: {g.Matcher.Pattern}\nГде буква '{l}'?");
 
-						Previous[id] = l;
+						UserBase[id].Previous = l;
 					}
 				}
 				catch (Exception e)
 				{
 					Console.WriteLine($" - {id} {message.From.FirstName} {message.From.LastName} Спровоцировал: {e.GetType()} {e.Message}");
 					await Bot.SendTextMessageAsync(chatid, $"Что-то пошло не так: {e.GetType()} {e.Message}");
-					Guessers[id] = null;
-					QuantityRequest[id] = false;
-					InterviewRequest[id] = false;
-					Previous[id] = '0';
+					UserBase[id].Guesser = null;
+					UserBase[id].QuantityRequest = false;
+					UserBase[id].InterviewRequest = false;
+					UserBase[id].Previous = '0';
 				}
 			}
 			else if (message.Text == "где")
@@ -146,8 +141,8 @@ namespace AlikBot.Telegram
 			}
 			else if (message.Text == "/startgame")
 			{
-				Guessers[id] = new Guesser(Words);
-				QuantityRequest[id] = true;
+				//UserBase[id].Guesser = new Guesser(Words);
+				UserBase[id].QuantityRequest = true;
 				await Bot.SendTextMessageAsync(chatid, "Сколько букв в слове?");
 			}
 			else
