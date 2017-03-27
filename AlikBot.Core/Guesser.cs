@@ -12,9 +12,7 @@ namespace AlikBot.Core
 
 		public WordBase Words { get; set; }
 
-		//private HashSet<char> NotAllowedLetters = new HashSet<char>();
-
-		public int Attempts => Matcher.GuessedLetters.Count;
+		public int Attempts => Matcher.Guessed.Count + Matcher.WrongGuessed.Count;
 
 		public Guesser()
 		{
@@ -55,18 +53,18 @@ namespace AlikBot.Core
 				ans.PossibleWords.Add(i);
 				foreach (var j in i)
 				{
-					if (Matcher.GuessedLetters.Contains(j)) continue;
+					if (Matcher.Guessed.Contains(j)) continue;
 					if (d.ContainsKey(j)) d[j]++;
 					else d[j] = 1;
 				}
 			}
 			var l = d.ToList();
 			l.Sort((a, b) => -a.Value.CompareTo(b.Value));
-			Matcher.GuessedLetters.Add(l[0].Key);
 			ans.Letter = l[0].Key;
 			return ans;
 		}
 
+		// todel
 		public char Guess()
 		{
 			var d = new Dictionary<char, int>();
@@ -75,20 +73,25 @@ namespace AlikBot.Core
 				if (!Matcher.Match(i)) continue;
 				foreach (var j in i)
 				{
-					if (Matcher.GuessedLetters.Contains(j)) continue;
+					if (Matcher.Guessed.Contains(j)) continue;
 					if (d.ContainsKey(j)) d[j]++;
 					else d[j] = 1;
 				}
 			}
 			var l = d.ToList();
 			l.Sort((a, b) => -a.Value.CompareTo(b.Value));
-			Matcher.GuessedLetters.Add(l[0].Key);
+			Matcher.Guessed.Add(l[0].Key);
 			return l[0].Key;
 		}
 
 		public void Hint(char letter, params int[] indexes)
 		{
-			if (indexes[0] == 0) return;
+			if (indexes[0] == 0)
+			{
+				Matcher.WrongGuessed.Add(letter);
+				return;
+			}
+			Matcher.Guessed.Add(letter);
 			var p = new StringBuilder(Matcher.Pattern);
 			foreach (var i in indexes)
 			{
