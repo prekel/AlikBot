@@ -13,6 +13,8 @@ using Telegram.Bot.Types.InlineQueryResults;
 using Telegram.Bot.Types.InputMessageContents;
 using Telegram.Bot.Types.ReplyMarkups;
 
+using NLog;
+
 using AlikBot.Core;
 
 namespace AlikBot.Telegram
@@ -26,6 +28,19 @@ namespace AlikBot.Telegram
 		public static UserBase UserBase { get; set; } = new UserBase();
 
 		private const int Vlad = 115533229;
+
+		private static Logger Log = LogManager.GetCurrentClassLogger();
+
+		public static class Wrap
+		{
+			private static Logger Log = LogManager.GetCurrentClassLogger();
+
+			public static async void Send(long id, string message)
+			{
+				await Bot.SendTextMessageAsync(id, message);
+				Log.Trace($"Out: {id}\r\n{message}");
+			}
+		}
 
 		private static void Main(string[] args)
 		{
@@ -46,7 +61,8 @@ namespace AlikBot.Telegram
 			Console.Title = me.Username;
 
 			Bot.StartReceiving();
-			Bot.SendTextMessageAsync(Vlad, $"Я проснулся {DateTime.Now}");
+			//Bot.SendTextMessageAsync(Vlad, $"Я проснулся {DateTime.Now}");
+			Wrap.Send(Vlad, $"Я проснулся {DateTime.Now}");
 			Console.ReadLine();
 			Bot.StopReceiving();
 		}
@@ -63,7 +79,8 @@ namespace AlikBot.Telegram
 			var text = message.Text;
 			var chatid = message.Chat.Id;
 
-			Console.WriteLine($"{id} {message.From.FirstName} {message.From.LastName} {text}");
+			//Console.WriteLine($"{id} {message.From.FirstName} {message.From.LastName} {text}");
+			Log.Trace($" In: {id} {message.From.FirstName} {message.From.LastName}\r\n{text}");
 
 			if (message.Type != MessageType.TextMessage) return;
 
@@ -84,13 +101,16 @@ namespace AlikBot.Telegram
 					var guess = g.GuessAnswer();
 					var l = guess.Letter;
 
-					await Bot.SendTextMessageAsync(chatid, $"Попытка №1 Шаблон: {g.Matcher.Pattern}\nГде буква '{l}'?");
+					//await Bot.SendTextMessageAsync(chatid, $"Попытка №1 Шаблон: {g.Matcher.Pattern}\nГде буква '{l}'?");
+					Wrap.Send(chatid, $"Попытка №1 Шаблон: {g.Matcher.Pattern}\nГде буква '{l}'?");
 					UserBase[id].Previous = l;
 				}
 				catch (Exception e)
 				{
-					Console.WriteLine($" - {id} {message.From.FirstName} {message.From.LastName} Спровоцировал: {e.GetType()} {e.Message}");
-					await Bot.SendTextMessageAsync(chatid, $"Что-то пошло не так: {e.GetType()} {e.Message}");
+					//Console.WriteLine($" - {id} {message.From.FirstName} {message.From.LastName} Спровоцировал: {e.GetType()} {e.Message}");
+					//await Bot.SendTextMessageAsync(chatid, $"Что-то пошло не так: {e.GetType()} {e.Message}");
+					Log.Warn($"{id} {message.From.FirstName} {message.From.LastName}\r\nСпровоцировал: {e.GetType()} {e.Message}");
+					Wrap.Send(chatid, $"Что-то пошло не так: {e.GetType()} {e.Message}");
 					UserBase[id].Guesser = null;
 					UserBase[id].QuantityRequest = false;
 					UserBase[id].InterviewRequest = false;
@@ -102,15 +122,17 @@ namespace AlikBot.Telegram
 				try
 				{
 					var g = UserBase[id].Guesser;
-					var p = UserBase[id].Previous;
+					var p = UserBase[id].Guesser.Answer.Letter;
 
 					var d = (from i in text.Split() select int.Parse(i)).ToArray();
 					g.Hint(p, d);
 
 					if (g.Matcher.Unknown == 0)
 					{
-						Console.WriteLine($" - {id} {message.From.FirstName} {message.From.LastName} Угадал слово '{g.Matcher.Pattern}' c {g.Attempts} попытки!");
-						await Bot.SendTextMessageAsync(chatid, $"Угадано слово '{g.Matcher.Pattern}' c {g.Attempts} попытки!");
+						//Console.WriteLine($" - {id} {message.From.FirstName} {message.From.LastName} Угадал слово '{g.Matcher.Pattern}' c {g.Attempts} попытки!");
+						Log.Info($"{id} {message.From.FirstName} {message.From.LastName} Угадал слово '{g.Matcher.Pattern}' c {g.Attempts} попытки!");
+						//await Bot.SendTextMessageAsync(chatid, $"Угадано слово '{g.Matcher.Pattern}' c {g.Attempts} попытки!");
+						Wrap.Send(chatid, $"Угадано слово '{g.Matcher.Pattern}' c {g.Attempts} попытки!");
 						UserBase[id].InterviewRequest = false;
 					}
 					else
@@ -118,15 +140,18 @@ namespace AlikBot.Telegram
 						var guess = g.GuessAnswer();
 						var l = guess.Letter;
 
-						await Bot.SendTextMessageAsync(chatid, $"Попытка №{g.Attempts} Шаблон: {g.Matcher.Pattern}\nГде буква '{l}'?");
+						//await Bot.SendTextMessageAsync(chatid, $"Попытка №{g.Attempts} Шаблон: {g.Matcher.Pattern}\nГде буква '{l}'?");
+						Wrap.Send(chatid, $"Попытка №{g.Attempts + 1} Шаблон: {g.Matcher.Pattern}\nГде буква '{l}'?");
 
 						UserBase[id].Previous = l;
 					}
 				}
 				catch (Exception e)
 				{
-					Console.WriteLine($" - {id} {message.From.FirstName} {message.From.LastName} Спровоцировал: {e.GetType()} {e.Message}");
-					await Bot.SendTextMessageAsync(chatid, $"Что-то пошло не так: {e.GetType()} {e.Message}");
+					//Console.WriteLine($" - {id} {message.From.FirstName} {message.From.LastName} Спровоцировал: {e.GetType()} {e.Message}");
+					//await Bot.SendTextMessageAsync(chatid, $"Что-то пошло не так: {e.GetType()} {e.Message}");
+					Log.Warn($"{id} {message.From.FirstName} {message.From.LastName}\r\nСпровоцировал: {e.GetType()} {e.Message}");
+					Wrap.Send(chatid, $"Что-то пошло не так: {e.GetType()} {e.Message}");
 					UserBase[id].Guesser = null;
 					UserBase[id].QuantityRequest = false;
 					UserBase[id].InterviewRequest = false;
@@ -139,21 +164,25 @@ namespace AlikBot.Telegram
 			}
 			else if (text.ToLower() == "убейся")
 			{
+				Log.Fatal("Сказали убиться((");
 				Environment.Exit(id);
 			}
 			else if (text.ToLower() == "/rules")
 			{
-				await Bot.SendTextMessageAsync(chatid, "Наберите /startgame для начала. Ответ боту — 0, если буквы нет, и номера букв через пробел, если есть");
+				//await Bot.SendTextMessageAsync(chatid, "Наберите /startgame для начала. Ответ боту — 0, если буквы нет, и номера букв через пробел, если есть");
+				Wrap.Send(chatid, "Наберите /startgame для начала. Ответ боту — 0, если буквы нет, и номера букв через пробел, если есть");
 			}
 			else if (text.ToLower() == "/startgame")
 			{
 				//UserBase[id].Guesser = new Guesser(Words);
 				UserBase[id].QuantityRequest = true;
-				await Bot.SendTextMessageAsync(chatid, "Сколько букв в слове?");
+				//await Bot.SendTextMessageAsync(chatid, "Сколько букв в слове?");
+				Wrap.Send(chatid, "Сколько букв в слове?");
 			}
 			else
 			{
-				await Bot.SendTextMessageAsync(chatid, message.Text);
+				//await Bot.SendTextMessageAsync(chatid, message.Text);
+				Wrap.Send(chatid, message.Text);
 			}
 		}
 	}
