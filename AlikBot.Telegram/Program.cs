@@ -46,13 +46,14 @@ namespace AlikBot.Telegram
 			Bot.OnMessage += BotOnMessageReceived;
 			Bot.OnMessageEdited += BotOnMessageReceived;
 			Bot.OnReceiveError += BotOnReceiveError;
+			Bot.OnCallbackQuery += BotOnCallbackQueryReceived;
 
 			var me = Bot.GetMeAsync().Result;
 
 			Console.Title = me.Username;
 
 			Bot.StartReceiving();
-			Send(Vlad, $"Я проснулся {DateTime.Now}").Start();
+			Send(Vlad, $"Я проснулся {DateTime.Now}").Wait();
 			Console.ReadLine();
 			Bot.StopReceiving();
 		}
@@ -69,9 +70,10 @@ namespace AlikBot.Telegram
 			Debugger.Break();
 		}
 
-		private static void BotOnChosenInlineResultReceived(object sender, ChosenInlineResultEventArgs chosenInlineResultEventArgs)
+		private static async void BotOnCallbackQueryReceived(object sender, CallbackQueryEventArgs callbackQueryEventArgs)
 		{
-			Console.WriteLine($"Received choosen inline result: {chosenInlineResultEventArgs.ChosenInlineResult.ResultId}");
+			var id = callbackQueryEventArgs.CallbackQuery.Message.Chat.Id;
+			await Send(id, callbackQueryEventArgs.CallbackQuery.Data);
 		}
 
 		private static async void BotOnMessageReceived(object sender, MessageEventArgs messageEventArgs)
