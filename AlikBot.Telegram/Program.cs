@@ -84,11 +84,55 @@ namespace AlikBot.Telegram
 
 		private static async void BotOnCallbackQueryReceived(object sender, CallbackQueryEventArgs callbackQueryEventArgs)
 		{
-			var id = callbackQueryEventArgs.CallbackQuery.Message.Chat.Id;
-			await Send(Bot.SendTextMessageAsync(id, callbackQueryEventArgs.CallbackQuery.Data));
+			var message = callbackQueryEventArgs.CallbackQuery.Message;
+			var chatid = message.Chat.Id;
+			var id = (int)chatid;
+			var data = callbackQueryEventArgs.CallbackQuery.Data;
+			var x = 0;
+			if (int.TryParse(data, out x))
+			{
+				UserBase[id].Numbers.Add(x);
+			}
+			else if (data == "Всё")
+			{
+				try
+				{
+					var g = UserBase[id].Guesser;
+					var p = UserBase[id].Guesser.Answer.Letter;
+
+					var d = UserBase[id].Numbers.ToArray();
+					if (d.Length == 0)
+						d = new[] { 0 };
+					g.Hint(p, d);
+					UserBase[id].Numbers.Clear();
+
+					if (g.Matcher.Unknown == 0)
+					{
+						Log.Info(
+							$"{id} {message.From.FirstName} {message.From.LastName} Угадал слово '{g.Matcher.Pattern}' c {g.Attempts} попытки!");
+						await Send(Bot.SendTextMessageAsync(chatid, $"Угадано слово '{g.Matcher.Pattern}' c {g.Attempts} попытки!"));
+						UserBase[id].InterviewRequest = false;
+					}
+					else
+					{
+						var guess = g.GuessAnswer();
+						var l = guess.Letter;
+
+						var keyboard = CreateKeyboard(g.Matcher);
+						await Send(Bot.SendTextMessageAsync(chatid, $"Попытка №{g.Attempts + 1}\nГде буква '{l}'?", replyMarkup: keyboard));
+					}
+				}
+				catch (Exception e)
+				{
+					Log.Warn($"{id} {message.From.FirstName} {message.From.LastName} Спровоцировал:\r\n{e.GetType()} {e.Message}");
+					await Send(Bot.SendTextMessageAsync(chatid, $"Что-то пошло не так: {e.GetType()} {e.Message}"));
+					UserBase.Remove(id);
+				}
+			}
+			//await Send(Bot.SendTextMessageAsync(chatid, callbackQueryEventArgs.CallbackQuery.Data));
 		}
 
-		private InlineKeyboardMarkup CreateKeyboard(Matcher m)
+		public static InlineKeyboardMarkup CreateKeyboard(Matcher m)
 		{
 			var k = new InlineKeyboardButton[m.Length];
 			for (var i = 0; i < k.Length; i++)
@@ -148,7 +192,9 @@ namespace AlikBot.Telegram
 						var guess = g.GuessAnswer();
 						var l = guess.Letter;
 
-						await Send(Bot.SendTextMessageAsync(chatid, $"Попытка №1\nГде буква '{l}'?"));
+						var keyboard = CreateKeyboard(g.Matcher);
+						await Send(Bot.SendTextMessageAsync(chatid, $"Попытка №{g.Attempts + 1}\nГде буква '{l}'?", replyMarkup: keyboard));
+						//await Send(Bot.SendTextMessageAsync(chatid, $"Попытка №1\nГде буква '{l}'?"));
 						UserBase[id].Previous = l;
 					}
 					catch (Exception e)
@@ -180,7 +226,9 @@ namespace AlikBot.Telegram
 							var guess = g.GuessAnswer();
 							var l = guess.Letter;
 
-							await Send(Bot.SendTextMessageAsync(chatid, $"Попытка №{g.Attempts + 1}\nГде буква '{l}'?"));
+							var keyboard = CreateKeyboard(g.Matcher);
+							await Send(Bot.SendTextMessageAsync(chatid, $"Попытка №{g.Attempts + 1}\nГде буква '{l}'?", replyMarkup: keyboard));
+							//await Send(Bot.SendTextMessageAsync(chatid, $"Попытка №{g.Attempts + 1}\nГде буква '{l}'?"));
 
 							UserBase[id].Previous = l;
 						}
