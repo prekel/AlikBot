@@ -19,11 +19,13 @@ namespace AlikBot.Telegram
 {
 	public class Program
 	{
-		private static TelegramBotClient Bot;
+		public static TelegramBotClient Bot { get; private set; }
 
-		private static WordBase Words;
+		public static WordBase Words { get; private set; }
 
 		public static UserBase UserBase { get; set; } = new UserBase();
+
+		private const int Vlad = 115533229;
 
 		private static void Main(string[] args)
 		{
@@ -44,7 +46,7 @@ namespace AlikBot.Telegram
 			Console.Title = me.Username;
 
 			Bot.StartReceiving();
-			Bot.SendTextMessageAsync(115533229, $"Я проснулся {DateTime.Now}");
+			Bot.SendTextMessageAsync(Vlad, $"Я проснулся {DateTime.Now}");
 			Console.ReadLine();
 			Bot.StopReceiving();
 		}
