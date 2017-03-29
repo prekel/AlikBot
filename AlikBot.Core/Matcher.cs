@@ -22,13 +22,7 @@ namespace AlikBot.Core
 
 		public class Letters : HashSet<char>
 		{
-			public override string ToString()
-			{
-				var s = "";
-				foreach (var i in this)
-					s += i;
-				return s;
-			}
+			public override string ToString() => this.Aggregate("", (current, i) => current + i);
 
 			public string ToString(string name) => $"[{Count} {name}: '{ToString()}']";
 		}
@@ -39,11 +33,12 @@ namespace AlikBot.Core
 
 		public bool Match(string s)
 		{
-			if (s.Length != Pattern.Length)
-				return false;
-			if (s.ToCharArray().Count(i => Guessed.Contains(i)) == 0 && Guessed.Count > 0)
-				return false;
-			return !s.Where((t, i) => t != Pattern[i] && Pattern[i] != '_').Any();
+			return s.Length == Pattern.Length
+			       && !s.Where((t, i) =>
+					       Pattern[i] == '_' && Guessed.Contains(t) ||
+					       WrongGuessed.Contains(t) ||
+					       Pattern[i] != t && Pattern[i] != '_')
+				       .Any();
 		}
 
 		public override string ToString() =>

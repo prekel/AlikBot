@@ -5,10 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 
+using NLog;
+
 namespace AlikBot.Core
 {
 	public class WordBase : List<string>
 	{
+		private Logger Log = LogManager.GetCurrentClassLogger();
+
 		public Dictionary<string, int> Files;
 
 		public WordBase(params string[] files)
@@ -37,7 +41,9 @@ namespace AlikBot.Core
 			{
 				using (var r = new StreamReader(f.Key))
 				{
+					Log.Debug($"Загружается {f.Key}");
 					AddRange(r.ReadToEnd().Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries));
+					Log.Debug($"Загружено {f.Key}");
 				}
 			}
 		}
