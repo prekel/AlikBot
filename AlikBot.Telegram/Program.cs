@@ -53,9 +53,29 @@ namespace AlikBot.Telegram
 			Console.Title = me.Username;
 
 			Bot.StartReceiving();
-			Send(Vlad, $"Я проснулся {DateTime.Now}").Wait();
+			//Send(Vlad, $"Я проснулся {DateTime.Now}").Wait();
+			//Send<Message>(Bot.SendTextMessageAsync(Vlad, $"Я проснулся {DateTime.Now}")).Wait();
+			Send1(Bot.SendTextMessageAsync(Vlad, $"Я проснулся {DateTime.Now}")).Wait();
 			Console.ReadLine();
 			Bot.StopReceiving();
+		}
+
+		public static async Task Send(long id, string message)
+		{
+			Log.Trace($"Out: {id}\r\n{message}");
+			await Bot.SendTextMessageAsync(id, message);
+		}
+
+		public static async Task Send1(Task<Message> func)
+		{
+			var m = await func;
+			Log.Trace($"Out: {m.Chat.Id} {m.Chat.FirstName} {m.Chat.LastName}\r\n{m.Text}");
+		}
+
+		public static async Task Send<T>(Task<T> func)
+		{
+			var m = (Message)(object)await func;
+			Log.Trace($"Out: {m.Chat.Id} {m.Chat.FirstName} {m.Chat.LastName}\r\n{m.Text}");
 		}
 
 		private static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
@@ -74,6 +94,16 @@ namespace AlikBot.Telegram
 		{
 			var id = callbackQueryEventArgs.CallbackQuery.Message.Chat.Id;
 			await Send(id, callbackQueryEventArgs.CallbackQuery.Data);
+		}
+
+		private InlineKeyboardMarkup CreateKeyboard(Matcher m)
+		{
+			var k = new InlineKeyboardButton[m.Length];
+			for (var i = 0; i < k.Length; i++)
+			{
+				k[i] = new InlineKeyboardButton(m.Pattern[i] == '_' ? (i + 1).ToString() : m.Pattern[i].ToString());
+			}
+			return new InlineKeyboardMarkup(new[] { k, new[] { new InlineKeyboardButton("Всё") } });
 		}
 
 		private static async void BotOnMessageReceived(object sender, MessageEventArgs messageEventArgs)
@@ -131,7 +161,7 @@ namespace AlikBot.Telegram
 					}
 					catch (Exception e)
 					{
-						Log.Warn($"{id} {message.From.FirstName} {message.From.LastName}\r\nСпровоцировал: {e.GetType()} {e.Message}");
+						Log.Warn($"{id} {message.From.FirstName} {message.From.LastName} Спровоцировал:\r\n{e.GetType()} {e.Message}");
 						await Send(chatid, $"Что-то пошло не так: {e.GetType()} {e.Message}");
 						UserBase[id].Guesser = null;
 						UserBase[id].QuantityRequest = false;
@@ -168,7 +198,7 @@ namespace AlikBot.Telegram
 					}
 					catch (Exception e)
 					{
-						Log.Warn($"{id} {message.From.FirstName} {message.From.LastName}\r\nСпровоцировал: {e.GetType()} {e.Message}");
+						Log.Warn($"{id} {message.From.FirstName} {message.From.LastName} Спровоцировал:\r\n{e.GetType()} {e.Message}");
 						await Send(chatid, $"Что-то пошло не так: {e.GetType()} {e.Message}");
 						UserBase[id].Guesser = null;
 						UserBase[id].QuantityRequest = false;
@@ -232,12 +262,6 @@ namespace AlikBot.Telegram
 				Log.Error(e.ToString());
 				await Send(messageEventArgs.Message.From.Id, $"Что-то пошло не так: {e.Message}");
 			}
-		}
-
-		public static async Task Send(long id, string message)
-		{
-			Log.Trace($"Out: {id}\r\n{message}");
-			await Bot.SendTextMessageAsync(id, message);
 		}
 	}
 }

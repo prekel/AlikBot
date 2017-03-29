@@ -14,6 +14,8 @@ namespace AlikBot.Core
 
 		public int Unknown => Pattern.Length - Known;
 
+		public int Length => Pattern.Length;
+
 		public Matcher(string pattern) => Pattern = pattern;
 
 		public Matcher(int n) => Pattern = new String('_', n);
