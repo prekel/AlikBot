@@ -29,7 +29,7 @@ namespace AlikBot.Telegram
 
 		private const int Vlad = 115533229;
 
-		private static Logger Log = LogManager.GetCurrentClassLogger();
+		private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
 		private static void Main(string[] args)
 		{
@@ -121,7 +121,7 @@ namespace AlikBot.Telegram
 					var g = UserBase[id].Guesser;
 					var p = UserBase[id].Guesser.Answer.Letter;
 
-					var d = (from i in text.Split() select Int32.Parse(i)).ToArray();
+					var d = (from i in text.Split() select int.Parse(i)).ToArray();
 					g.Hint(p, d);
 
 					if (g.Matcher.Unknown == 0)
