@@ -41,9 +41,17 @@ namespace AlikBot.Core
 		{
 			if (s.Length != Pattern.Length)
 				return false;
-			if (s.ToCharArray().Count(i => Guessed.Contains(i)) == 0 && Guessed.Count > 0)
-				return false;
-			return !s.Where((t, i) => t != Pattern[i] && Pattern[i] != '_').Any();
+			for (var i = 0; i < s.Length; i++)
+			{
+				if (Pattern[i] == '_' && Guessed.Contains(s[i]))
+					return false;
+				if (WrongGuessed.Contains(s[i]))
+					return false;
+				if (Pattern[i] != s[i] && Pattern[i] != '_')
+					return false;
+			}
+			return true;
+			//return !s.Where((t, i) => t != Pattern[i] && Pattern[i] != '_').Any();
 		}
 
 		public override string ToString() =>

@@ -44,6 +44,8 @@ namespace AlikBot.Telegram
 
 		private static void Main(string[] args)
 		{
+			AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+
 			using (var r = new StreamReader("api.txt"))
 			{
 				Bot = new TelegramBotClient(r.ReadLine());
@@ -65,6 +67,12 @@ namespace AlikBot.Telegram
 			Wrap.Send(Vlad, $"Я проснулся {DateTime.Now}");
 			Console.ReadLine();
 			Bot.StopReceiving();
+		}
+
+		private static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+		{
+			Log.Fatal(e.ExceptionObject.ToString());
+			Environment.Exit(1);
 		}
 
 		private static void BotOnReceiveError(object sender, ReceiveErrorEventArgs receiveErrorEventArgs)
@@ -164,8 +172,12 @@ namespace AlikBot.Telegram
 			}
 			else if (text.ToLower() == "убейся")
 			{
-				Log.Fatal("Сказали убиться((");
-				Environment.Exit(id);
+				new Task(async () =>
+				{
+					Log.Fatal($"{id} Сказал убиться((");
+					await Task.Delay(1000);
+					Environment.Exit(id);
+				}).Start();
 			}
 			else if (text.ToLower() == "/rules")
 			{
