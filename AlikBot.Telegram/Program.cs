@@ -52,8 +52,7 @@ namespace AlikBot.Telegram
 			Console.Title = me.Username;
 
 			Bot.StartReceiving();
-			//Bot.SendTextMessageAsync(Vlad, $"Я проснулся {DateTime.Now}");
-			Send(Vlad, $"Я проснулся {DateTime.Now}");
+			Send(Vlad, $"Я проснулся {DateTime.Now}").Start();
 			Console.ReadLine();
 			Bot.StopReceiving();
 		}
@@ -61,6 +60,7 @@ namespace AlikBot.Telegram
 		private static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
 		{
 			Log.Fatal(e.ExceptionObject.ToString());
+			Debugger.Break();
 			Environment.Exit(1);
 		}
 
@@ -69,128 +69,169 @@ namespace AlikBot.Telegram
 			Debugger.Break();
 		}
 
+		private static void BotOnChosenInlineResultReceived(object sender, ChosenInlineResultEventArgs chosenInlineResultEventArgs)
+		{
+			Console.WriteLine($"Received choosen inline result: {chosenInlineResultEventArgs.ChosenInlineResult.ResultId}");
+		}
+
 		private static async void BotOnMessageReceived(object sender, MessageEventArgs messageEventArgs)
 		{
-			var message = messageEventArgs.Message;
-			var id = message.From.Id;
-			var text = message.Text;
-			var chatid = message.Chat.Id;
-
-			//Console.WriteLine($"{id} {message.From.FirstName} {message.From.LastName} {text}");
-			Log.Trace($" In: {id} {message.From.FirstName} {message.From.LastName}\r\n{text}");
-
-			if (message.Type != MessageType.TextMessage) return;
-
-			if (!UserBase.ContainsKey(id))
+			try
 			{
-				UserBase[id] = new UserInfo(id);
-			}
+				var message = messageEventArgs.Message;
+				var id = message.From.Id;
+				var text = message.Text;
+				var chatid = message.Chat.Id;
 
-			if (UserBase[id].QuantityRequest)
-			{
-				try
+				Log.Trace($" In: {id} {message.From.FirstName} {message.From.LastName}\r\n{text}");
+
+				if (message.Type != MessageType.TextMessage) return;
+
+				if (!UserBase.ContainsKey(id))
 				{
-					UserBase[id].Guesser = new Guesser(Int32.Parse(text), Words);
-					UserBase[id].QuantityRequest = false;
-					UserBase[id].InterviewRequest = true;
-
-					var g = UserBase[id].Guesser;
-					var guess = g.GuessAnswer();
-					var l = guess.Letter;
-
-					//await Bot.SendTextMessageAsync(chatid, $"Попытка №1 Шаблон: {g.Matcher.Pattern}\nГде буква '{l}'?");
-					Send(chatid, $"Попытка №1 Шаблон: {g.Matcher.Pattern}\nГде буква '{l}'?");
-					UserBase[id].Previous = l;
+					UserBase[id] = new UserInfo(id);
 				}
-				catch (Exception e)
+
+				if (text == "/wordscount" && UserBase[id].Guesser != null)
 				{
-					//Console.WriteLine($" - {id} {message.From.FirstName} {message.From.LastName} Спровоцировал: {e.GetType()} {e.Message}");
-					//await Bot.SendTextMessageAsync(chatid, $"Что-то пошло не так: {e.GetType()} {e.Message}");
-					Log.Warn($"{id} {message.From.FirstName} {message.From.LastName}\r\nСпровоцировал: {e.GetType()} {e.Message}");
-					Send(chatid, $"Что-то пошло не так: {e.GetType()} {e.Message}");
-					UserBase[id].Guesser = null;
-					UserBase[id].QuantityRequest = false;
-					UserBase[id].InterviewRequest = false;
-					UserBase[id].Previous = '0';
+					await Send(chatid, $"Количество возможных слов: {UserBase[id].Guesser.Answer.PossibleWords.Count}");
 				}
-			}
-			else if (UserBase[id].InterviewRequest)
-			{
-				try
+				else if (text == "/words" && UserBase[id].Guesser != null)
 				{
-					var g = UserBase[id].Guesser;
-					var p = UserBase[id].Guesser.Answer.Letter;
-
-					var d = (from i in text.Split() select int.Parse(i)).ToArray();
-					g.Hint(p, d);
-
-					if (g.Matcher.Unknown == 0)
+					if (UserBase[id].Guesser.Answer.PossibleWords.Count < 300)
 					{
-						//Console.WriteLine($" - {id} {message.From.FirstName} {message.From.LastName} Угадал слово '{g.Matcher.Pattern}' c {g.Attempts} попытки!");
-						Log.Info($"{id} {message.From.FirstName} {message.From.LastName} Угадал слово '{g.Matcher.Pattern}' c {g.Attempts} попытки!");
-						//await Bot.SendTextMessageAsync(chatid, $"Угадано слово '{g.Matcher.Pattern}' c {g.Attempts} попытки!");
-						Send(chatid, $"Угадано слово '{g.Matcher.Pattern}' c {g.Attempts} попытки!");
-						UserBase[id].InterviewRequest = false;
+						var s = UserBase[id].Guesser.Answer.PossibleWords.Aggregate("", (current, i) => current + (i + '\n'));
+						await Send(chatid, $"Возможные слова:\n{s}");
 					}
 					else
 					{
+						await Send(chatid, $"{UserBase[id].Guesser.Answer.PossibleWords.Count} Слишком много слов для вывода");
+					}
+				}
+				else if (UserBase[id].QuantityRequest)
+				{
+					try
+					{
+						UserBase[id].Guesser = new Guesser(Int32.Parse(text), Words);
+						UserBase[id].QuantityRequest = false;
+						UserBase[id].InterviewRequest = true;
+
+						var g = UserBase[id].Guesser;
 						var guess = g.GuessAnswer();
 						var l = guess.Letter;
 
-						//await Bot.SendTextMessageAsync(chatid, $"Попытка №{g.Attempts} Шаблон: {g.Matcher.Pattern}\nГде буква '{l}'?");
-						Send(chatid, $"Попытка №{g.Attempts + 1} Шаблон: {g.Matcher.Pattern}\nГде буква '{l}'?");
-
+						await Send(chatid, $"Попытка №1 Шаблон: {g.Matcher.Pattern}\nГде буква '{l}'?");
 						UserBase[id].Previous = l;
 					}
+					catch (Exception e)
+					{
+						Log.Warn($"{id} {message.From.FirstName} {message.From.LastName}\r\nСпровоцировал: {e.GetType()} {e.Message}");
+						await Send(chatid, $"Что-то пошло не так: {e.GetType()} {e.Message}");
+						UserBase[id].Guesser = null;
+						UserBase[id].QuantityRequest = false;
+						UserBase[id].InterviewRequest = false;
+						UserBase[id].Previous = '0';
+					}
 				}
-				catch (Exception e)
+				else if (UserBase[id].InterviewRequest)
 				{
-					//Console.WriteLine($" - {id} {message.From.FirstName} {message.From.LastName} Спровоцировал: {e.GetType()} {e.Message}");
-					//await Bot.SendTextMessageAsync(chatid, $"Что-то пошло не так: {e.GetType()} {e.Message}");
-					Log.Warn($"{id} {message.From.FirstName} {message.From.LastName}\r\nСпровоцировал: {e.GetType()} {e.Message}");
-					Send(chatid, $"Что-то пошло не так: {e.GetType()} {e.Message}");
-					UserBase[id].Guesser = null;
-					UserBase[id].QuantityRequest = false;
-					UserBase[id].InterviewRequest = false;
-					UserBase[id].Previous = '0';
+					try
+					{
+						var g = UserBase[id].Guesser;
+						var p = UserBase[id].Guesser.Answer.Letter;
+
+						var d = (from i in text.Split() select int.Parse(i)).ToArray();
+						g.Hint(p, d);
+
+						if (g.Matcher.Unknown == 0)
+						{
+							Log.Info(
+								$"{id} {message.From.FirstName} {message.From.LastName} Угадал слово '{g.Matcher.Pattern}' c {g.Attempts} попытки!");
+							await Send(chatid, $"Угадано слово '{g.Matcher.Pattern}' c {g.Attempts} попытки!");
+							UserBase[id].InterviewRequest = false;
+						}
+						else
+						{
+							var guess = g.GuessAnswer();
+							var l = guess.Letter;
+
+							await Send(chatid, $"Попытка №{g.Attempts + 1} Шаблон: {g.Matcher.Pattern}\nГде буква '{l}'?");
+
+							UserBase[id].Previous = l;
+						}
+					}
+					catch (Exception e)
+					{
+						Log.Warn($"{id} {message.From.FirstName} {message.From.LastName}\r\nСпровоцировал: {e.GetType()} {e.Message}");
+						await Send(chatid, $"Что-то пошло не так: {e.GetType()} {e.Message}");
+						UserBase[id].Guesser = null;
+						UserBase[id].QuantityRequest = false;
+						UserBase[id].InterviewRequest = false;
+						UserBase[id].Previous = '0';
+					}
+				}
+				else if (text.ToLower() == "где")
+				{
+					await Bot.SendLocationAsync(chatid, 56.055237f, 92.968446f);
+				}
+				else if (text.ToLower() == "убейся")
+				{
+					new Task(async () =>
+					{
+						Log.Fatal($"{id} Сказал убиться((");
+						await Task.Delay(1000);
+						Environment.Exit(id);
+					}).Start();
+				}
+				else if (text.ToLower() == "/rules")
+				{
+					await Send(chatid,
+						"Наберите /startgame для начала. Ответ боту — 0, если буквы нет, и номера букв через пробел, если есть");
+				}
+				else if (text.ToLower() == "/startgame")
+				{
+					UserBase[id].QuantityRequest = true;
+					await Send(chatid, "Сколько букв в слове?");
+				}
+				else if (text.ToLower() == "/test")
+				{
+					var keyboard = new InlineKeyboardMarkup(new[]
+					{
+						new[]
+						{
+							new InlineKeyboardButton("1"),
+							new InlineKeyboardButton("2"),
+							new InlineKeyboardButton("3"),
+							new InlineKeyboardButton("4"),
+							new InlineKeyboardButton("5"),
+							new InlineKeyboardButton("6"),
+							new InlineKeyboardButton("7"),
+							new InlineKeyboardButton("8"),
+							new InlineKeyboardButton("9"),
+						},
+						new[]
+						{
+							new InlineKeyboardButton("Next")
+						}
+					});
+					await Bot.SendTextMessageAsync(chatid, "Choose", replyMarkup: keyboard);
+				}
+				else
+				{
+					await Send(chatid, message.Text);
 				}
 			}
-			else if (text.ToLower() == "где")
+			catch (Exception e)
 			{
-				await Bot.SendLocationAsync(chatid, 56.055237f, 92.968446f);
-			}
-			else if (text.ToLower() == "убейся")
-			{
-				new Task(async () =>
-				{
-					Log.Fatal($"{id} Сказал убиться((");
-					await Task.Delay(1000);
-					Environment.Exit(id);
-				}).Start();
-			}
-			else if (text.ToLower() == "/rules")
-			{
-				//await Bot.SendTextMessageAsync(chatid, "Наберите /startgame для начала. Ответ боту — 0, если буквы нет, и номера букв через пробел, если есть");
-				Send(chatid, "Наберите /startgame для начала. Ответ боту — 0, если буквы нет, и номера букв через пробел, если есть");
-			}
-			else if (text.ToLower() == "/startgame")
-			{
-				//UserBase[id].Guesser = new Guesser(Words);
-				UserBase[id].QuantityRequest = true;
-				//await Bot.SendTextMessageAsync(chatid, "Сколько букв в слове?");
-				Send(chatid, "Сколько букв в слове?");
-			}
-			else
-			{
-				//await Bot.SendTextMessageAsync(chatid, message.Text);
-				Send(chatid, message.Text);
+				Log.Error(e.ToString());
+				await Send(messageEventArgs.Message.From.Id, $"Что-то пошло не так: {e.Message}");
 			}
 		}
 
-		public static async void Send(long id, string message)
+		public static async Task Send(long id, string message)
 		{
-			await Bot.SendTextMessageAsync(id, message);
 			Log.Trace($"Out: {id}\r\n{message}");
+			await Bot.SendTextMessageAsync(id, message);
 		}
 	}
 }
