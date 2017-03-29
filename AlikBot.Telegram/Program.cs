@@ -94,7 +94,11 @@ namespace AlikBot.Telegram
 					UserBase[id] = new UserInfo(id);
 				}
 
-				if (text == "/wordscount" && UserBase[id].Guesser != null)
+				if (text == "/info" && UserBase[id].Guesser != null)
+				{
+					await Send(chatid, $"{UserBase[id].Guesser}");
+				}
+				else if (text == "/wordscount" && UserBase[id].Guesser != null)
 				{
 					await Send(chatid, $"Количество возможных слов: {UserBase[id].Guesser.Answer.PossibleWords.Count}");
 				}
@@ -114,7 +118,7 @@ namespace AlikBot.Telegram
 				{
 					try
 					{
-						UserBase[id].Guesser = new Guesser(Int32.Parse(text), Words);
+						UserBase[id].Guesser = new Guesser(int.Parse(text), Words);
 						UserBase[id].QuantityRequest = false;
 						UserBase[id].InterviewRequest = true;
 
@@ -122,7 +126,7 @@ namespace AlikBot.Telegram
 						var guess = g.GuessAnswer();
 						var l = guess.Letter;
 
-						await Send(chatid, $"Попытка №1 Шаблон: {g.Matcher.Pattern}\nГде буква '{l}'?");
+						await Send(chatid, $"Попытка №1\nГде буква '{l}'?");
 						UserBase[id].Previous = l;
 					}
 					catch (Exception e)
@@ -157,7 +161,7 @@ namespace AlikBot.Telegram
 							var guess = g.GuessAnswer();
 							var l = guess.Letter;
 
-							await Send(chatid, $"Попытка №{g.Attempts + 1} Шаблон: {g.Matcher.Pattern}\nГде буква '{l}'?");
+							await Send(chatid, $"Попытка №{g.Attempts + 1}\nГде буква '{l}'?");
 
 							UserBase[id].Previous = l;
 						}
