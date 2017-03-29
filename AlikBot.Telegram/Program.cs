@@ -155,10 +155,7 @@ namespace AlikBot.Telegram
 					{
 						Log.Warn($"{id} {message.From.FirstName} {message.From.LastName} Спровоцировал:\r\n{e.GetType()} {e.Message}");
 						await Send(Bot.SendTextMessageAsync(chatid, $"Что-то пошло не так: {e.GetType()} {e.Message}"));
-						UserBase[id].Guesser = null;
-						UserBase[id].QuantityRequest = false;
-						UserBase[id].InterviewRequest = false;
-						UserBase[id].Previous = '0';
+						UserBase.Remove(id);
 					}
 				}
 				else if (UserBase[id].InterviewRequest)
@@ -192,10 +189,7 @@ namespace AlikBot.Telegram
 					{
 						Log.Warn($"{id} {message.From.FirstName} {message.From.LastName} Спровоцировал:\r\n{e.GetType()} {e.Message}");
 						await Send(Bot.SendTextMessageAsync(chatid, $"Что-то пошло не так: {e.GetType()} {e.Message}"));
-						UserBase[id].Guesser = null;
-						UserBase[id].QuantityRequest = false;
-						UserBase[id].InterviewRequest = false;
-						UserBase[id].Previous = '0';
+						UserBase.Remove(id);
 					}
 				}
 				else if (text.ToLower() == "где")

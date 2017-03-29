@@ -36,11 +36,11 @@ namespace AlikBot.Core
 		public bool Match(string s)
 		{
 			return s.Length == Pattern.Length
-			       && !s.Where((t, i) =>
-					       Pattern[i] == '_' && Guessed.Contains(t) ||
-					       WrongGuessed.Contains(t) ||
-					       Pattern[i] != t && Pattern[i] != '_')
-				       .Any();
+				   && !s.Where((t, i) =>
+						   Pattern[i] == '_' && Guessed.Contains(t) ||
+						   WrongGuessed.Contains(t) ||
+						   Pattern[i] != t && Pattern[i] != '_')
+					   .Any();
 		}
 
 		public override string ToString() =>
