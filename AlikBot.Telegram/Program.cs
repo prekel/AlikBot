@@ -43,14 +43,26 @@ namespace AlikBot.Telegram
 			}
 
 			//Words = new WordBase(@"C:\Users\vladislav\OneDrive\Projects\AlikBot\AlikBot.Core\pldf.txt");
+			//Words = new WordBase
+			//{
+			//	Files = new Dictionary<string, int>
+			//	{
+			//		[@"C:\Users\vladislav\OneDrive\Projects\AlikBot\AlikBot.Core\pldf.txt"] = 1,
+			//		[@"C:\Users\vladislav\OneDrive\Projects\AlikBot\AlikBot.Core\zdf.txt"] = 1,
+			//		[@"C:\Users\vladislav\OneDrive\Projects\AlikBot\AlikBot.Core\fam.txt"] = 1,
+			//		[@"C:\Users\vladislav\OneDrive\Projects\AlikBot\AlikBot.Core\litf.txt"] = 1,
+			//		[@"C:\Users\vladislav\OneDrive\Projects\ApiTest\bin\Debug\top2.txt"] = 1
+			//	}
+			//};
 			Words = new WordBase
 			{
 				Files = new Dictionary<string, int>
 				{
-					[@"C:\Users\vladislav\OneDrive\Projects\AlikBot\AlikBot.Core\pldf.txt"] = 1,
-					[@"C:\Users\vladislav\OneDrive\Projects\AlikBot\AlikBot.Core\zdf.txt"] = 1,
-					[@"C:\Users\vladislav\OneDrive\Projects\AlikBot\AlikBot.Core\fam.txt"] = 1,
-					[@"C:\Users\vladislav\OneDrive\Projects\AlikBot\AlikBot.Core\litf.txt"] = 1
+					[@"pldf.txt"] = 1,
+					[@"zdf.txt"] = 1,
+					[@"fam.txt"] = 1,
+					[@"litf.txt"] = 1,
+					[@"top2.txt"] = 1
 				}
 			};
 
