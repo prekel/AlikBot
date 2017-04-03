@@ -26,12 +26,17 @@ namespace AlikBot.Core
 
 		public async Task InitAsync()
 		{
+			var l = new List<KeyValuePair<Task<string>, string>>();
 			foreach (var f in Files)
 			{
-				using (var r = new StreamReader(f.Key))
-				{
-					AddRange((await r.ReadToEndAsync()).Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries));
-				}
+				var r = new StreamReader(f.Key);
+				Log.Debug($"Загружается {f.Key}");
+				l.Add(new KeyValuePair<Task<string>, string>(r.ReadToEndAsync(), f.Key));
+			}
+			foreach (var i in l)
+			{
+				AddRange((await i.Key).Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries));
+				Log.Debug($"Загружено {i.Value}");
 			}
 		}
 

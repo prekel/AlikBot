@@ -31,6 +31,8 @@ namespace AlikBot.Telegram
 
 		private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
+		private static Task initbase;
+
 		private static void Main(string[] args)
 		{
 			AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
@@ -41,7 +43,9 @@ namespace AlikBot.Telegram
 			}
 
 			Words = new WordBase(@"C:\Users\vladislav\OneDrive\Projects\AlikBot\AlikBot.Core\pldf.txt");
-			Words.Init();
+			//Words.Init();
+			initbase = Words.InitAsync();
+			initbase.Wait();
 
 			Bot.OnMessage += BotOnMessageReceived;
 			Bot.OnMessageEdited += BotOnMessageReceived;
@@ -213,6 +217,7 @@ namespace AlikBot.Telegram
 				}
 				else if (text.ToLower() == "/startgame")
 				{
+					initbase.Wait();
 					UserBase[id].QuantityRequest = true;
 					await Send(Bot.SendTextMessageAsync(chatid, "Сколько букв в слове?"));
 				}
