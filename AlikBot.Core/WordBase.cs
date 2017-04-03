@@ -15,7 +15,20 @@ namespace AlikBot.Core
 
 		public Dictionary<string, int> Files;
 
+		public WordBase()
+		{
+		}
+
 		public WordBase(params string[] files)
+		{
+			Files = new Dictionary<string, int>();
+			foreach (var i in files)
+			{
+				Files[i] = 1;
+			}
+		}
+
+		public WordBase(IEnumerable<string> files)
 		{
 			Files = new Dictionary<string, int>();
 			foreach (var i in files)
@@ -26,12 +39,20 @@ namespace AlikBot.Core
 
 		public async Task InitAsync()
 		{
+			var l = new List<KeyValuePair<Task<string>, string>>();
 			foreach (var f in Files)
 			{
 				using (var r = new StreamReader(f.Key))
 				{
-					AddRange((await r.ReadToEndAsync()).Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries));
+					Log.Debug($"Загружается {f.Key}");
+					l.Add(new KeyValuePair<Task<string>, string>(r.ReadToEndAsync(), f.Key));
+					//AddRange((await r.ReadToEndAsync()).Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries));
 				}
+			}
+			foreach (var i in l)
+			{
+				AddRange((await i.Key).Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries));
+				Log.Debug($"Загружено {i.Value}");
 			}
 		}
 

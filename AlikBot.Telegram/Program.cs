@@ -46,7 +46,7 @@ namespace AlikBot.Telegram
 			Bot.OnMessage += BotOnMessageReceived;
 			Bot.OnMessageEdited += BotOnMessageReceived;
 			Bot.OnReceiveError += BotOnReceiveError;
-			Bot.OnCallbackQuery += BotOnCallbackQueryReceived;
+			//Bot.OnCallbackQuery += BotOnCallbackQueryReceived;
 
 			var me = Bot.GetMeAsync().Result;
 
@@ -82,64 +82,64 @@ namespace AlikBot.Telegram
 			Debugger.Break();
 		}
 
-		private static async void BotOnCallbackQueryReceived(object sender, CallbackQueryEventArgs callbackQueryEventArgs)
+		//private static async void BotOnCallbackQueryReceived(object sender, CallbackQueryEventArgs callbackQueryEventArgs)
+		//{
+		//	var message = callbackQueryEventArgs.CallbackQuery.Message;
+		//	var chatid = message.Chat.Id;
+		//	var id = (int)chatid;
+		//	var data = callbackQueryEventArgs.CallbackQuery.Data;
+		//	var x = 0;
+		//	if (int.TryParse(data, out x))
+		//	{
+		//		UserBase[id].Numbers.Add(x);
+		//	}
+		//	else if (data == "Всё")
+		//	{
+		//		try
+		//		{
+		//			var g = UserBase[id].Guesser;
+		//			var p = UserBase[id].Guesser.Answer.Letter;
+
+		//			var d = UserBase[id].Numbers.ToArray();
+		//			if (d.Length == 0)
+		//				d = new[] { 0 };
+		//			g.Hint(p, d);
+		//			UserBase[id].Numbers.Clear();
+
+		//			if (g.Matcher.Unknown == 0)
+		//			{
+		//				Log.Info(
+		//					$"{id} {message.From.FirstName} {message.From.LastName} Угадал слово '{g.Matcher.Pattern}' c {g.Attempts} попытки!");
+		//				await Send(Bot.SendTextMessageAsync(chatid, $"Угадано слово '{g.Matcher.Pattern}' c {g.Attempts} попытки!"));
+		//				UserBase[id].InterviewRequest = false;
+		//			}
+		//			else
+		//			{
+		//				var guess = g.GuessAnswer();
+		//				var l = guess.Letter;
+
+		//				var keyboard = CreateKeyboard(g.Matcher);
+		//				await Send(Bot.SendTextMessageAsync(chatid, $"Попытка №{g.Attempts + 1}\nГде буква '{l}'?", replyMarkup: keyboard));
+		//			}
+		//		}
+		//		catch (Exception e)
+		//		{
+		//			Log.Warn($"{id} {message.From.FirstName} {message.From.LastName} Спровоцировал:\r\n{e.GetType()} {e.Message}");
+		//			await Send(Bot.SendTextMessageAsync(chatid, $"Что-то пошло не так: {e.GetType()} {e.Message}"));
+		//			UserBase.Remove(id);
+		//		}
+		//	}
+		//	//await Send(Bot.SendTextMessageAsync(chatid, callbackQueryEventArgs.CallbackQuery.Data));
+		//}
+
+		public static ReplyKeyboardMarkup CreateKeyboard(Matcher m)
 		{
-			var message = callbackQueryEventArgs.CallbackQuery.Message;
-			var chatid = message.Chat.Id;
-			var id = (int)chatid;
-			var data = callbackQueryEventArgs.CallbackQuery.Data;
-			var x = 0;
-			if (int.TryParse(data, out x))
-			{
-				UserBase[id].Numbers.Add(x);
-			}
-			else if (data == "Всё")
-			{
-				try
-				{
-					var g = UserBase[id].Guesser;
-					var p = UserBase[id].Guesser.Answer.Letter;
-
-					var d = UserBase[id].Numbers.ToArray();
-					if (d.Length == 0)
-						d = new[] { 0 };
-					g.Hint(p, d);
-					UserBase[id].Numbers.Clear();
-
-					if (g.Matcher.Unknown == 0)
-					{
-						Log.Info(
-							$"{id} {message.From.FirstName} {message.From.LastName} Угадал слово '{g.Matcher.Pattern}' c {g.Attempts} попытки!");
-						await Send(Bot.SendTextMessageAsync(chatid, $"Угадано слово '{g.Matcher.Pattern}' c {g.Attempts} попытки!"));
-						UserBase[id].InterviewRequest = false;
-					}
-					else
-					{
-						var guess = g.GuessAnswer();
-						var l = guess.Letter;
-
-						var keyboard = CreateKeyboard(g.Matcher);
-						await Send(Bot.SendTextMessageAsync(chatid, $"Попытка №{g.Attempts + 1}\nГде буква '{l}'?", replyMarkup: keyboard));
-					}
-				}
-				catch (Exception e)
-				{
-					Log.Warn($"{id} {message.From.FirstName} {message.From.LastName} Спровоцировал:\r\n{e.GetType()} {e.Message}");
-					await Send(Bot.SendTextMessageAsync(chatid, $"Что-то пошло не так: {e.GetType()} {e.Message}"));
-					UserBase.Remove(id);
-				}
-			}
-			//await Send(Bot.SendTextMessageAsync(chatid, callbackQueryEventArgs.CallbackQuery.Data));
-		}
-
-		public static InlineKeyboardMarkup CreateKeyboard(Matcher m)
-		{
-			var k = new InlineKeyboardButton[m.Length];
+			var k = new KeyboardButton[m.Length];
 			for (var i = 0; i < k.Length; i++)
 			{
-				k[i] = new InlineKeyboardButton(m.Pattern[i] == '_' ? (i + 1).ToString() : m.Pattern[i].ToString());
+				k[i] = new KeyboardButton(m.Pattern[i] == '_' ? (i + 1).ToString() : m.Pattern[i].ToString());
 			}
-			return new InlineKeyboardMarkup(new[] { k, new[] { new InlineKeyboardButton("Всё") } });
+			return new ReplyKeyboardMarkup(new[] { k, new[] { new KeyboardButton("Всё") } }, true, true);
 		}
 
 		private static async void BotOnMessageReceived(object sender, MessageEventArgs messageEventArgs)
@@ -195,7 +195,7 @@ namespace AlikBot.Telegram
 						var keyboard = CreateKeyboard(g.Matcher);
 						await Send(Bot.SendTextMessageAsync(chatid, $"Попытка №{g.Attempts + 1}\nГде буква '{l}'?", replyMarkup: keyboard));
 						//await Send(Bot.SendTextMessageAsync(chatid, $"Попытка №1\nГде буква '{l}'?"));
-						UserBase[id].Previous = l;
+						//UserBase[id].Previous = l;
 					}
 					catch (Exception e)
 					{
@@ -209,10 +209,13 @@ namespace AlikBot.Telegram
 					try
 					{
 						var g = UserBase[id].Guesser;
-						var p = UserBase[id].Guesser.Answer.Letter;
+						var p = g.Answer.Letter;
 
-						var d = (from i in text.Split() select int.Parse(i)).ToArray();
-						g.Hint(p, d);
+						if (text != "Всё")
+						{
+							var d = (from i in text.Split() select int.Parse(i)).ToArray();
+							g.Hint(p, d);
+						}
 
 						if (g.Matcher.Unknown == 0)
 						{
@@ -223,14 +226,13 @@ namespace AlikBot.Telegram
 						}
 						else
 						{
-							var guess = g.GuessAnswer();
+							var guess = text == "Всё" || text[text.Length - 1] == '0' ? g.GuessAnswer() : g.Answer;
 							var l = guess.Letter;
 
 							var keyboard = CreateKeyboard(g.Matcher);
 							await Send(Bot.SendTextMessageAsync(chatid, $"Попытка №{g.Attempts + 1}\nГде буква '{l}'?", replyMarkup: keyboard));
 							//await Send(Bot.SendTextMessageAsync(chatid, $"Попытка №{g.Attempts + 1}\nГде буква '{l}'?"));
-
-							UserBase[id].Previous = l;
+							//UserBase[id].Previous = l;
 						}
 					}
 					catch (Exception e)
