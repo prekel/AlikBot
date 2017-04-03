@@ -45,7 +45,7 @@ namespace AlikBot.Telegram
 			Words = new WordBase(@"C:\Users\vladislav\OneDrive\Projects\AlikBot\AlikBot.Core\pldf.txt");
 			//Words.Init();
 			initbase = Words.InitAsync();
-			initbase.Wait();
+			//initbase.Wait();
 
 			Bot.OnMessage += BotOnMessageReceived;
 			Bot.OnMessageEdited += BotOnMessageReceived;
