@@ -15,7 +15,20 @@ namespace AlikBot.Core
 
 		public Dictionary<string, int> Files;
 
+		public WordBase()
+		{
+		}
+
 		public WordBase(params string[] files)
+		{
+			Files = new Dictionary<string, int>();
+			foreach (var i in files)
+			{
+				Files[i] = 1;
+			}
+		}
+
+		public WordBase(IEnumerable<string> files)
 		{
 			Files = new Dictionary<string, int>();
 			foreach (var i in files)
