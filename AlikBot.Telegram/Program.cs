@@ -79,6 +79,7 @@ namespace AlikBot.Telegram
 
 		private static void BotOnReceiveError(object sender, ReceiveErrorEventArgs receiveErrorEventArgs)
 		{
+			Log.Error(receiveErrorEventArgs.ApiRequestException.ToString());
 			Debugger.Break();
 		}
 
