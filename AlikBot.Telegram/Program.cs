@@ -42,29 +42,7 @@ namespace AlikBot.Telegram
 				Bot = new TelegramBotClient(r.ReadLine());
 			}
 
-			//Words = new WordBase(@"C:\Users\vladislav\OneDrive\Projects\AlikBot\AlikBot.Core\pldf.txt");
-			//Words = new WordBase
-			//{
-			//	Files = new Dictionary<string, int>
-			//	{
-			//		[@"C:\Users\vladislav\OneDrive\Projects\AlikBot\AlikBot.Core\pldf.txt"] = 1,
-			//		[@"C:\Users\vladislav\OneDrive\Projects\AlikBot\AlikBot.Core\zdf.txt"] = 1,
-			//		[@"C:\Users\vladislav\OneDrive\Projects\AlikBot\AlikBot.Core\fam.txt"] = 1,
-			//		[@"C:\Users\vladislav\OneDrive\Projects\AlikBot\AlikBot.Core\litf.txt"] = 1,
-			//		[@"C:\Users\vladislav\OneDrive\Projects\ApiTest\bin\Debug\top2.txt"] = 1
-			//	}
-			//};
-			Words = new WordBase
-			{
-				Files =
-				{
-					@"pldf.txt",
-					@"zdf.txt",
-					@"fam.txt",
-					@"litf.txt",
-					@"top2.txt"
-				}
-			};
+			Words = new WordBase(Directory.GetFiles("dictionaries"));
 
 			//Words.Init();
 			initbase = Words.InitAsync();

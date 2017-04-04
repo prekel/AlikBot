@@ -19,9 +19,9 @@ namespace AlikBot.Core
 		{
 		}
 
-		public WordBase(params string[] files) => Files.AddRange(Files);
+		public WordBase(params string[] files) => Files.AddRange(files);
 
-		public WordBase(IEnumerable<string> files) => Files.AddRange(Files);
+		public WordBase(IEnumerable<string> files) => Files.AddRange(files);
 
 		public async Task InitAsync()
 		{
