@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Net;
+using System.Text.RegularExpressions;
 
 using Telegram.Bot;
 using Telegram.Bot.Args;
@@ -122,7 +124,19 @@ namespace AlikBot.Telegram
 
 				if (message.Type != MessageType.TextMessage) return;
 
-				if (text == "/info" && UserBase[id].Guesser != null)
+				if (text.Substring(0, 9) == "/download")
+				{
+					var url = text.Substring(9);
+					var client = new WebClient();
+					client.Encoding = System.Text.Encoding.UTF8;
+					var reply = client.DownloadString(url);
+					var regex = new Regex("[А-Яа-яЁё]{1,30}");
+					foreach (Match i in regex.Matches(reply))
+					{
+						Words.Add(i.Value.ToLower());
+					}
+				}
+				else if (text == "/info" && UserBase[id].Guesser != null)
 				{
 					await Send(Bot.SendTextMessageAsync(chatid, $"{UserBase[id].Guesser}"));
 				}
