@@ -9,7 +9,7 @@ using NLog;
 
 namespace AlikBot.Core
 {
-	public class WordBase : List<string>
+	public class WordBase : HashSet<string>
 	{
 		private Logger Log = LogManager.GetCurrentClassLogger();
 
@@ -46,11 +46,25 @@ namespace AlikBot.Core
 				Log.Debug($"Загружается {f.Key}");
 				l.Add(r.ReadToEndAsync(), f.Key);
 			}
+			var l2 = new List<Task>();
 			foreach (var i in l)
 			{
-				AddRange((await i.Key).Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries));
-				Log.Debug($"Загружено {i.Value}");
+				var t = new Task(() =>
+				{
+					var spl = (i.Key.Result).Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+					foreach (var j in spl)
+					{
+						Add(j);
+					}
+					//AddRange((await i.Key).Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries));
+					Log.Debug($"Загружено {i.Value}");
+				});
+				l2.Add(t);
+				t.Start();
 			}
+			foreach (var i in l2)
+				await i;
+			//Task.WaitAll(l2.ToArray());
 		}
 
 		public void Init()
@@ -60,7 +74,12 @@ namespace AlikBot.Core
 				using (var r = new StreamReader(f.Key))
 				{
 					Log.Debug($"Загружается {f.Key}");
-					AddRange(r.ReadToEnd().Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries));
+					var spl = r.ReadToEnd().Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+					foreach (var j in spl)
+					{
+						Add(j);
+					}
+					//AddRange(r.ReadToEnd().Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries));
 					Log.Debug($"Загружено {f.Key}");
 				}
 			}
