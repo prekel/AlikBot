@@ -45,6 +45,7 @@ namespace AlikBot.Telegram
 			}
 
 			Words = new WordBase(Directory.GetFiles("dictionaries"));
+			Words.Files.AddRange(Directory.GetFiles("downloads"));
 
 			//Words.Init();
 			initbase = Words.InitAsync();
@@ -151,13 +152,34 @@ namespace AlikBot.Telegram
 						}
 					}
 
-					if (list.Count < 300)
+					if (list.Count == 0)
 					{
-						await Send(Bot.SendTextMessageAsync(chatid, $"Добавлено {list.Count} слов:\n{list.Aggregate("", (current, i) => current + (i + '\n'))}"));
+						await Send(Bot.SendTextMessageAsync(chatid, $"Добавлено {list.Count} слов"));
 					}
 					else
 					{
-						await Send(Bot.SendTextMessageAsync(chatid, $"Добавлено {list.Count} слов"));
+						list.Sort();
+						var str = list.Aggregate("", (current, i) => current + (i + "\r\n"));
+
+						new Task(async () =>
+						{
+							var o = $"downloads\\{id} {DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss")}.txt";
+							Log.Debug($"Начата записть в {o}");
+							using (var w = new StreamWriter(o))
+							{
+								await w.WriteAsync(str);
+							}
+							Log.Debug($"Закончена запись в {o}");
+						}).Start();
+
+						if (list.Count < 500)
+						{
+							await Send(Bot.SendTextMessageAsync(chatid, $"Добавлено {list.Count} слов:\n{str}"));
+						}
+						else
+						{
+							await Send(Bot.SendTextMessageAsync(chatid, $"Добавлено {list.Count} слов"));
+						}
 					}
 				}
 				else if (text == "/info" && UserBase[id].Guesser != null)
