@@ -71,5 +71,20 @@ namespace AlikBot.Core
 				}
 			}
 		}
+
+		public new bool Contains(string item)
+		{
+			return base.Contains(ToLower(item));
+		}
+
+		public new bool Add(string item)
+		{
+			return base.Add(ToLower(item));
+		}
+
+		public static string ToLower(string s)
+		{
+			return s.ToLower().Replace('ё', 'е');
+		}
 	}
 }

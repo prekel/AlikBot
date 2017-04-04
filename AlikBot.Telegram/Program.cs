@@ -131,9 +131,21 @@ namespace AlikBot.Telegram
 					client.Encoding = System.Text.Encoding.UTF8;
 					var reply = client.DownloadString(url);
 					var regex = new Regex("[А-Яа-яЁё]{1,30}");
+					var list = new List<string>();
 					foreach (Match i in regex.Matches(reply))
 					{
-						Words.Add(i.Value.ToLower());
+						if (Words.Add(i.Value))
+						{
+							list.Add(WordBase.ToLower(i.Value));
+						};
+					}
+					if (list.Count < 300)
+					{
+						await Send(Bot.SendTextMessageAsync(chatid, $"Добавлено {list.Count} слов:\n{list.Aggregate("", (current, i) => current + (i + '\n'))}"));
+					}
+					else
+					{
+						await Send(Bot.SendTextMessageAsync(chatid, $"Добавлено {list.Count} слов"));
 					}
 				}
 				else if (text == "/info" && UserBase[id].Guesser != null)
