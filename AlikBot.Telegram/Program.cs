@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Net;
 using System.Text.RegularExpressions;
+using System.Text;
 
 using Telegram.Bot;
 using Telegram.Bot.Args;
@@ -125,13 +126,18 @@ namespace AlikBot.Telegram
 
 				if (message.Type != MessageType.TextMessage) return;
 
-				if (text.Substring(0, 9) == "/download")
+				if (text.Contains("/download"))
 				{
 					var url = text.Substring(9);
-					var client = new WebClient();
-					client.Encoding = System.Text.Encoding.UTF8;
-					Log.Debug($"Начато скачивание и анализ {url}");
-					var reply = client.DownloadString(new Uri(url));
+					var reply = "";
+					using (var client = new WebClient())
+					{
+						client.Encoding = System.Text.Encoding.UTF8;
+						Log.Debug($"Начато скачивание и анализ {url}");
+						reply = client.DownloadString(new Uri(url));
+						Log.Debug($"Скачано {reply.Length} символов");
+					}
+
 					var regex1 = new Regex("[А-Яа-яЁё]{1,30}");
 					var regex2 = new Regex("[А-Яа-яЁё-]{1,30}");
 					var list = new List<string>();
