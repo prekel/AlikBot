@@ -319,7 +319,7 @@ namespace AlikBot.Telegram
 			catch (Exception e)
 			{
 				Log.Error(e.ToString());
-				await Send(Bot.SendTextMessageAsync(messageEventArgs.Message.From.Id, $"Что-то пошло не так: {e.Message}"));
+				await Send(Bot.SendTextMessageAsync(messageEventArgs.Message.From.Id, $"Что-то пошло не так: {e.GetType()} {e.Message}"));
 			}
 		}
 	}
