@@ -137,13 +137,13 @@ namespace AlikBot.Telegram
 
 				Log.Trace($" In: {id} {message.From.FirstName} {message.From.LastName}\r\n{text}");
 
-				if (message.Type != MessageType.TextMessage) return;
-
 				if (!UserBase.ContainsKey(id))
 				{
 					UserBase[id] = new UserInfo(id);
 				}
 
+				if (message.Type != MessageType.TextMessage) return;
+				
 				if (text == "/info" && UserBase[id].Guesser != null)
 				{
 					await Send(Bot.SendTextMessageAsync(chatid, $"{UserBase[id].Guesser}"));
@@ -169,6 +169,14 @@ namespace AlikBot.Telegram
 					try
 					{
 						UserBase[id].Guesser = new Guesser(int.Parse(text), Words);
+
+						var l1 = new List<string>();
+						foreach (var i in Words)
+						{
+							l1.Add(i);
+						}
+						l1.Sort();
+
 						UserBase[id].QuantityRequest = false;
 						UserBase[id].InterviewRequest = true;
 
@@ -240,7 +248,11 @@ namespace AlikBot.Telegram
 				}
 				else if (text.ToLower() == "/startgame")
 				{
-					initbase.Wait();
+					initbase.Wait(); 
+					if (!UserBase.ContainsKey(id))
+					{
+						UserBase[id] = new UserInfo(id);
+					}
 					UserBase[id].QuantityRequest = true;
 					await Send(Bot.SendTextMessageAsync(chatid, "Сколько букв в слове?"));
 				}

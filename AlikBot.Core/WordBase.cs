@@ -54,9 +54,11 @@ namespace AlikBot.Core
 					var spl = (i.Key.Result).Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
 					foreach (var j in spl)
 					{
+						if (j == null)
+							continue;
 						Add(j);
 					}
-					//AddRange((await i.Key).Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries));
+					//		AddRange((await i.Key).Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries));
 					Log.Debug($"Загружено {i.Value}");
 				});
 				l2.Add(t);
