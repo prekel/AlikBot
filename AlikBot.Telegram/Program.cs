@@ -48,8 +48,8 @@ namespace AlikBot.Telegram
 			Words = new WordBase(Directory.GetFiles("dictionaries"));
 			Words.Files.AddRange(Directory.GetFiles("downloads"));
 
-			//Words.Init();
-			initbase = Words.InitAsync();
+			Words.Init();
+			//initbase = Words.InitAsync();
 			//initbase.Wait();
 
 			Bot.OnMessage += BotOnMessageReceived;
@@ -63,6 +63,7 @@ namespace AlikBot.Telegram
 
 			Bot.StartReceiving();
 			Send(Bot.SendTextMessageAsync(Vlad, $"Я проснулся {DateTime.Now}")).Wait();
+			//initbase.Wait();
 			Console.ReadLine();
 			Bot.StopReceiving();
 		}
@@ -219,6 +220,7 @@ namespace AlikBot.Telegram
 						UserBase[id].InterviewRequest = true;
 
 						var g = UserBase[id].Guesser;
+						await Task.Delay(3000);
 						var guess = g.GuessAnswer();
 						var l = guess.Letter;
 
@@ -286,7 +288,7 @@ namespace AlikBot.Telegram
 				}
 				else if (text.ToLower() == "/startgame")
 				{
-					initbase.Wait();
+					//initbase.Wait();
 					if (!UserBase.ContainsKey(id))
 					{
 						UserBase[id] = new UserInfo(id);
