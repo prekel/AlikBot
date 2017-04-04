@@ -130,6 +130,7 @@ namespace AlikBot.Telegram
 					var url = text.Substring(9);
 					var client = new WebClient();
 					client.Encoding = System.Text.Encoding.UTF8;
+					Log.Debug($"Начато скачивание и анализ {url}");
 					var reply = client.DownloadString(new Uri(url));
 					var regex1 = new Regex("[А-Яа-яЁё]{1,30}");
 					var regex2 = new Regex("[А-Яа-яЁё-]{1,30}");
@@ -151,6 +152,7 @@ namespace AlikBot.Telegram
 							list.Add(WordBase.ToLower(i.Value));
 						}
 					}
+					Log.Debug($"Найдено {list.Count} слов");
 
 					if (list.Count == 0)
 					{
@@ -164,12 +166,11 @@ namespace AlikBot.Telegram
 						new Task(async () =>
 						{
 							var o = $"downloads\\{id} {DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss")}.txt";
-							Log.Debug($"Начата записть в {o}");
 							using (var w = new StreamWriter(o))
 							{
 								await w.WriteAsync(str);
 							}
-							Log.Debug($"Закончена запись в {o}");
+							Log.Debug($"Записано в {o}");
 						}).Start();
 
 						if (list.Count < 500)
