@@ -148,13 +148,6 @@ namespace AlikBot.Telegram
 					{
 						UserBase[id].Guesser = new Guesser(int.Parse(text), Words);
 
-						var l1 = new List<string>();
-						foreach (var i in Words)
-						{
-							l1.Add(i);
-						}
-						l1.Sort();
-
 						UserBase[id].QuantityRequest = false;
 						UserBase[id].InterviewRequest = true;
 
