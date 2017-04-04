@@ -56,13 +56,13 @@ namespace AlikBot.Telegram
 			//};
 			Words = new WordBase
 			{
-				Files = new Dictionary<string, int>
+				Files =
 				{
-					[@"pldf.txt"] = 1,
-					[@"zdf.txt"] = 1,
-					[@"fam.txt"] = 1,
-					[@"litf.txt"] = 1,
-					[@"top2.txt"] = 1
+					@"pldf.txt",
+					@"zdf.txt",
+					@"fam.txt",
+					@"litf.txt",
+					@"top2.txt"
 				}
 			};
 
@@ -143,7 +143,7 @@ namespace AlikBot.Telegram
 				}
 
 				if (message.Type != MessageType.TextMessage) return;
-				
+
 				if (text == "/info" && UserBase[id].Guesser != null)
 				{
 					await Send(Bot.SendTextMessageAsync(chatid, $"{UserBase[id].Guesser}"));
@@ -248,7 +248,7 @@ namespace AlikBot.Telegram
 				}
 				else if (text.ToLower() == "/startgame")
 				{
-					initbase.Wait(); 
+					initbase.Wait();
 					if (!UserBase.ContainsKey(id))
 					{
 						UserBase[id] = new UserInfo(id);

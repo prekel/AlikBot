@@ -11,43 +11,29 @@ namespace AlikBot.Core
 {
 	public class WordBase : HashSet<string>
 	{
-		private Logger Log = LogManager.GetCurrentClassLogger();
+		private readonly Logger Log = LogManager.GetCurrentClassLogger();
 
-		public Dictionary<string, int> Files;
+		public List<string> Files { get; set; } = new List<string>();
 
 		public WordBase()
 		{
 		}
 
-		public WordBase(params string[] files)
-		{
-			Files = new Dictionary<string, int>();
-			foreach (var i in files)
-			{
-				Files[i] = 1;
-			}
-		}
+		public WordBase(params string[] files) => Files.AddRange(Files);
 
-		public WordBase(IEnumerable<string> files)
-		{
-			Files = new Dictionary<string, int>();
-			foreach (var i in files)
-			{
-				Files[i] = 1;
-			}
-		}
+		public WordBase(IEnumerable<string> files) => Files.AddRange(Files);
 
 		public async Task InitAsync()
 		{
-			var l = new Dictionary<Task<string>, string>();
+			var tasks1 = new Dictionary<Task<string>, string>();
 			foreach (var f in Files)
 			{
-				var r = new StreamReader(f.Key);
-				Log.Debug($"Загружается {f.Key}");
-				l.Add(r.ReadToEndAsync(), f.Key);
+				var r = new StreamReader(f);
+				Log.Debug($"Загружается {f}");
+				tasks1.Add(r.ReadToEndAsync(), f);
 			}
-			var l2 = new List<Task>();
-			foreach (var i in l)
+			var tasks2 = new List<Task>();
+			foreach (var i in tasks1)
 			{
 				var t = new Task(() =>
 				{
@@ -58,31 +44,30 @@ namespace AlikBot.Core
 							continue;
 						Add(j);
 					}
-					//		AddRange((await i.Key).Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries));
 					Log.Debug($"Загружено {i.Value}");
 				});
-				l2.Add(t);
+				tasks2.Add(t);
 				t.Start();
 			}
-			foreach (var i in l2)
+			foreach (var i in tasks2)
+			{
 				await i;
-			//Task.WaitAll(l2.ToArray());
+			}
 		}
 
 		public void Init()
 		{
 			foreach (var f in Files)
 			{
-				using (var r = new StreamReader(f.Key))
+				using (var r = new StreamReader(f))
 				{
-					Log.Debug($"Загружается {f.Key}");
+					Log.Debug($"Загружается {f}");
 					var spl = r.ReadToEnd().Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
 					foreach (var j in spl)
 					{
 						Add(j);
 					}
-					//AddRange(r.ReadToEnd().Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries));
-					Log.Debug($"Загружено {f.Key}");
+					Log.Debug($"Загружено {f}");
 				}
 			}
 		}
