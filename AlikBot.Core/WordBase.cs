@@ -5,29 +5,53 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 
+using NLog;
+
 namespace AlikBot.Core
 {
-	public class WordBase : List<string>
+	public class WordBase : HashSet<string>
 	{
-		public Dictionary<string, int> Files;
+		private readonly Logger Log = LogManager.GetCurrentClassLogger();
 
-		public WordBase(params string[] files)
+		public List<string> Files { get; set; } = new List<string>();
+
+		public WordBase()
 		{
-			Files = new Dictionary<string, int>();
-			foreach (var i in files)
-			{
-				Files[i] = 1;
-			}
 		}
+
+		public WordBase(params string[] files) => Files.AddRange(files);
+
+		public WordBase(IEnumerable<string> files) => Files.AddRange(files);
 
 		public async Task InitAsync()
 		{
+			var tasks1 = new Dictionary<Task<string>, string>();
 			foreach (var f in Files)
 			{
-				using (var r = new StreamReader(f.Key))
+				var r = new StreamReader(f);
+				Log.Debug($"Загружается {f}");
+				tasks1.Add(r.ReadToEndAsync(), f);
+			}
+			var tasks2 = new List<Task>();
+			foreach (var i in tasks1)
+			{
+				var t = new Task(() =>
 				{
-					AddRange((await r.ReadToEndAsync()).Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries));
-				}
+					var spl = (i.Key.Result).Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+					foreach (var j in spl)
+					{
+						if (j == null)
+							continue;
+						Add(j);
+					}
+					Log.Debug($"Загружено {i.Value}");
+				});
+				tasks2.Add(t);
+				t.Start();
+			}
+			foreach (var i in tasks2)
+			{
+				await i;
 			}
 		}
 
@@ -35,11 +59,32 @@ namespace AlikBot.Core
 		{
 			foreach (var f in Files)
 			{
-				using (var r = new StreamReader(f.Key))
+				using (var r = new StreamReader(f))
 				{
-					AddRange(r.ReadToEnd().Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries));
+					Log.Debug($"Загружается {f}");
+					var spl = r.ReadToEnd().Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+					foreach (var j in spl)
+					{
+						Add(j);
+					}
+					Log.Debug($"Загружено {f}");
 				}
 			}
+		}
+
+		public new bool Contains(string item)
+		{
+			return base.Contains(ToLower(item));
+		}
+
+		public new bool Add(string item)
+		{
+			return base.Add(ToLower(item));
+		}
+
+		public static string ToLower(string s)
+		{
+			return s.ToLower().Replace('ё', 'е');
 		}
 	}
 }

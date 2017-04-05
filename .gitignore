@@ -253,3 +253,6 @@ paket-files/
 
 # Api token
 AlikBot.Telegram/api.txt
+
+# Reformer
+WordListReformer/
