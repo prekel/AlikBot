@@ -130,6 +130,15 @@ namespace AlikBot.Telegram
 				if (text.Contains("/download"))
 				{
 					var url = text.Substring(text.IndexOf(' ') + 1);
+					Uri uri;
+					try
+					{
+						uri = new Uri(url);
+					}
+					catch
+					{
+						uri = new Uri("http://" + url);
+					}
 					var reply = "";
 					using (var client = new WebClient())
 					{
@@ -163,9 +172,9 @@ namespace AlikBot.Telegram
 								client.Encoding = Encoding.UTF8;
 								break;
 						};
-						Log.Debug($"Начато скачивание и анализ {url}");
-						reply = client.DownloadString(new Uri(url));
-						Log.Debug($"Скачано {reply.Length} символов");
+						Log.Debug($"Начато скачивание и анализ {uri}");
+						reply = client.DownloadString(uri);
+						Log.Debug($"Скачано {reply.Length} символов из {uri}");
 					}
 
 					var regex1 = new Regex("[А-Яа-яЁё]{1,30}");
@@ -188,7 +197,7 @@ namespace AlikBot.Telegram
 							list.Add(WordBase.ToLower(i.Value));
 						}
 					}
-					Log.Debug($"Найдено {list.Count} слов");
+					Log.Debug($"Найдено {list.Count} слов в {uri}");
 
 					if (list.Count == 0)
 					{
@@ -206,7 +215,7 @@ namespace AlikBot.Telegram
 							{
 								await w.WriteAsync(str);
 							}
-							Log.Debug($"Записано в {o}");
+							Log.Debug($"Записаны в {o} слова из {uri}");
 						}).Start();
 
 						if (list.Count < 500)
