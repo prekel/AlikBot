@@ -14,20 +14,36 @@ namespace AlikBot.Core
 
 		public int Unknown => Pattern.Length - Known;
 
+		public int Length => Pattern.Length;
+
 		public Matcher(string pattern) => Pattern = pattern;
 
 		public Matcher(int n) => Pattern = new String('_', n);
 
 		public Matcher() => Pattern = "___";
 
-		public bool Match(string s)
+		public class Letters : HashSet<char>
 		{
-			if (s.Length != Pattern.Length)
-				return false;
-			return !s.Where((t, i) => t != Pattern[i] && Pattern[i] != '_').Any();
+			public override string ToString() => this.Aggregate("", (current, i) => current + i);
+
+			public string ToString(string name) => $"[{Count} {name}: '{ToString()}']";
 		}
 
-		public override string ToString() => 
-			$"Pattern: {Pattern} Length: {Pattern.Length} Known: {Known} Unknown: {Unknown}";
+		public Letters Guessed { get; set; } = new Letters();
+
+		public Letters WrongGuessed { get; set; } = new Letters();
+
+		public bool Match(string s)
+		{
+			return s.Length == Pattern.Length
+				   && !s.Where((t, i) =>
+						   Pattern[i] == '_' && Guessed.Contains(t) ||
+						   WrongGuessed.Contains(t) ||
+						   Pattern[i] != t && Pattern[i] != '_')
+					   .Any();
+		}
+
+		public override string ToString() =>
+			$"Pattern: {Pattern} {Guessed.ToString("Guessed")} {WrongGuessed.ToString("WrongGuessed")} Length: {Pattern.Length} Known: {Known} Unknown: {Unknown}";
 	}
 }

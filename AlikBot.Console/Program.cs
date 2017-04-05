@@ -13,15 +13,17 @@ namespace AlikBot.Console
 	{
 		public static void Main(string[] args)
 		{
-			var wb = new WordBase(@"C:\Users\vladislav\OneDrive\Projects\AlikBot\AlikBot.Core\pldf.txt");
+			var wb = new WordBase(Directory.GetFiles("dictionaries"));
+			wb.Files.AddRange(Directory.GetFiles("downloads"));
 			wb.Init();
-			System.Console.Write("Количество букв: ");
+			System.Console.Write("Сколько букв? ");
 			var n = int.Parse(System.Console.ReadLine());
 			var g = new Guesser(n, wb);
-			var c = 1;
 			while (true)
 			{
-				var l = g.Guess();
+				var guess = g.GuessAnswer();
+				var l = guess.Letter;
+				var c = g.Attempts;
 				System.Console.WriteLine($"Попытка №{c} Шаблон: {g.Matcher.Pattern}");
 				System.Console.WriteLine($"Где буква '{l}'?");
 				var d = (from i in System.Console.ReadLine().Split() select int.Parse(i)).ToArray();
@@ -31,7 +33,6 @@ namespace AlikBot.Console
 					System.Console.WriteLine($"Угадано слово '{g.Matcher.Pattern}' c {c} попытки!");
 					break;
 				}
-				c++;
 			}
 		}
 	}
