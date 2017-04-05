@@ -37,7 +37,7 @@ namespace AlikBot.Core
 			{
 				var t = new Task(() =>
 				{
-					var spl = (i.Key.Result).Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+					var spl = (i.Key.Result).Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
 					var c = 0;
 					foreach (var j in spl)
 					{
@@ -64,7 +64,7 @@ namespace AlikBot.Core
 				using (var r = new StreamReader(f))
 				{
 					Log.Debug($"              Загружается {f}");
-					var spl = r.ReadToEnd().Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+					var spl = r.ReadToEnd().Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
 					var c = 0;
 					foreach (var j in spl)
 					{
