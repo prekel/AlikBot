@@ -13,7 +13,8 @@ namespace AlikBot.Console
 	{
 		public static void Main(string[] args)
 		{
-			var wb = new WordBase(@"C:\Users\vladislav\OneDrive\Projects\AlikBot\AlikBot.Core\pldf.txt");
+			var wb = new WordBase(Directory.GetFiles("dictionaries"));
+			wb.Files.AddRange(Directory.GetFiles("downloads"));
 			wb.Init();
 			System.Console.Write("Сколько букв? ");
 			var n = int.Parse(System.Console.ReadLine());
