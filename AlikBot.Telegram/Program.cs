@@ -129,11 +129,40 @@ namespace AlikBot.Telegram
 
 				if (text.Contains("/download"))
 				{
-					var url = text.Substring(9);
+					var url = text.Substring(text.IndexOf(' ') + 1);
 					var reply = "";
 					using (var client = new WebClient())
 					{
-						client.Encoding = System.Text.Encoding.UTF8;
+						switch (text[text.IndexOf(' ') - 1])
+						{
+							case '0':
+								client.Encoding = Encoding.Default;
+								break;
+							case '1':
+								client.Encoding = Encoding.ASCII;
+								break;
+							case '2':
+								client.Encoding = Encoding.BigEndianUnicode;
+								break;
+							case '3':
+								client.Encoding = Encoding.Default;
+								break;
+							case '4':
+								client.Encoding = Encoding.Unicode;
+								break;
+							case '5':
+								client.Encoding = Encoding.UTF32;
+								break;
+							case '6':
+								client.Encoding = Encoding.UTF7;
+								break;
+							case '7':
+								client.Encoding = Encoding.UTF8;
+								break;
+							default:
+								client.Encoding = Encoding.UTF8;
+								break;
+						};
 						Log.Debug($"Начато скачивание и анализ {url}");
 						reply = client.DownloadString(new Uri(url));
 						Log.Debug($"Скачано {reply.Length} символов");
