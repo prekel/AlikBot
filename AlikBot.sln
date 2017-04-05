@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlikBot.Telegram", "AlikBot
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlikBot.Console", "AlikBot.Console\AlikBot.Console.csproj", "{AE89B4DB-4A22-458E-BF32-D2D244BE2343}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordListReformer", "WordListReformer\WordListReformer.csproj", "{48C4916D-A492-4034-AD11-848999A979A3}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,10 +27,6 @@ Global
 		{AE89B4DB-4A22-458E-BF32-D2D244BE2343}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE89B4DB-4A22-458E-BF32-D2D244BE2343}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AE89B4DB-4A22-458E-BF32-D2D244BE2343}.Release|Any CPU.Build.0 = Release|Any CPU
-		{48C4916D-A492-4034-AD11-848999A979A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{48C4916D-A492-4034-AD11-848999A979A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{48C4916D-A492-4034-AD11-848999A979A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{48C4916D-A492-4034-AD11-848999A979A3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
