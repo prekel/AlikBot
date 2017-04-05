@@ -39,6 +39,7 @@ namespace AlikBot.Telegram
 		private static void Main(string[] args)
 		{
 			AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+			LogManager.Configuration.Variables["starttime"] = DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss-ffff");
 
 			using (var r = new StreamReader("api.txt"))
 			{

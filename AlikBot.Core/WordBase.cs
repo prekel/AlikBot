@@ -29,7 +29,7 @@ namespace AlikBot.Core
 			foreach (var f in Files)
 			{
 				var r = new StreamReader(f);
-				Log.Debug($"Загружается {f}");
+				Log.Debug($"              Загружается {f}");
 				tasks1.Add(r.ReadToEndAsync(), f);
 			}
 			var tasks2 = new List<Task>();
@@ -46,7 +46,7 @@ namespace AlikBot.Core
 						if (Add(j))
 							c++;
 					}
-					Log.Debug($"{c} слов загружено из {i.Value}");
+					Log.Debug($"{c:D7} слов загружено из {i.Value}");
 				});
 				tasks2.Add(t);
 				t.Start();
@@ -63,7 +63,7 @@ namespace AlikBot.Core
 			{
 				using (var r = new StreamReader(f))
 				{
-					Log.Debug($"Загружается {f}");
+					Log.Debug($"              Загружается {f}");
 					var spl = r.ReadToEnd().Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
 					var c = 0;
 					foreach (var j in spl)
@@ -71,7 +71,7 @@ namespace AlikBot.Core
 						if (Add(j))
 							c++;
 					}
-					Log.Debug($"{c} слов загружено из {f}");
+					Log.Debug($"{c:D7} слов загружено из {f}");
 				}
 			}
 		}
