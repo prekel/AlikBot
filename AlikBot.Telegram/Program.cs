@@ -79,6 +79,11 @@ namespace AlikBot.Telegram
 		{
 			var m = await func;
 			Log.Trace($"Out: {m.Chat.Id} {m.Chat.FirstName} {m.Chat.LastName}\r\n{m.Text}");
+			if (1 == 0)
+			{
+				var s = Console.ReadLine();
+				await Bot.SendTextMessageAsync(m.Chat.Id, s);
+			}
 		}
 
 		private static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
