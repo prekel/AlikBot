@@ -127,7 +127,11 @@ namespace AlikBot.Telegram
 
 				if (message.Type != MessageType.TextMessage) return;
 
-				if (text.Contains("/download"))
+				if (text == "/wordscount" && UserBase[id].Guesser == null)
+				{
+					await Send(Bot.SendTextMessageAsync(chatid, $"Количество слов: {Words.Count}"));
+				}
+				else if (text.Contains("/download"))
 				{
 					var url = text.Substring(text.IndexOf(' ') + 1);
 					Uri uri;

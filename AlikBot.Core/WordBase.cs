@@ -38,13 +38,15 @@ namespace AlikBot.Core
 				var t = new Task(() =>
 				{
 					var spl = (i.Key.Result).Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+					var c = 0;
 					foreach (var j in spl)
 					{
 						if (j == null)
 							continue;
-						Add(j);
+						if (Add(j))
+							c++;
 					}
-					Log.Debug($"Загружено {i.Value}");
+					Log.Debug($"{c} слов загружено из {i.Value}");
 				});
 				tasks2.Add(t);
 				t.Start();
@@ -63,11 +65,13 @@ namespace AlikBot.Core
 				{
 					Log.Debug($"Загружается {f}");
 					var spl = r.ReadToEnd().Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+					var c = 0;
 					foreach (var j in spl)
 					{
-						Add(j);
+						if (Add(j))
+							c++;
 					}
-					Log.Debug($"Загружено {f}");
+					Log.Debug($"{c} слов загружено из {f}");
 				}
 			}
 		}
