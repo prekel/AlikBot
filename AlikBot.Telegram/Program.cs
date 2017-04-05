@@ -39,6 +39,7 @@ namespace AlikBot.Telegram
 		private static void Main(string[] args)
 		{
 			AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+			LogManager.Configuration.Variables["starttime"] = DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss-ffff");
 
 			using (var r = new StreamReader("api.txt"))
 			{
@@ -127,7 +128,11 @@ namespace AlikBot.Telegram
 
 				if (message.Type != MessageType.TextMessage) return;
 
-				if (text.Contains("/download"))
+				if (text == "/wordscount" && UserBase[id].Guesser == null)
+				{
+					await Send(Bot.SendTextMessageAsync(chatid, $"Количество слов: {Words.Count}"));
+				}
+				else if (text.Contains("/download"))
 				{
 					var url = text.Substring(text.IndexOf(' ') + 1);
 					Uri uri;
